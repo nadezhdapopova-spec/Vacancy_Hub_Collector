@@ -10,10 +10,12 @@ class BaseApiFetcher(ABC):
 
     @abstractmethod
     def connect(self) -> Response:
+        "Делает GET-запрос"
         pass
 
     @abstractmethod
     def get_data(self, key_word: str) -> Any:
+        "Обрабатывает GET-запрос и полученные данные"
         pass
 
 
@@ -34,12 +36,14 @@ class HeadHunterAPI(BaseApiFetcher, ABC):
         super().__init__()
 
     def __connect(self) -> Response:
+        "Делает GET-запрос"
         response = requests.get(self.__url, headers=self.__headers, params=self.__params)
         if response.status_code != 200:
             raise Exception("Подключение не удалось")
         return response
 
     def get_data(self, key_word: str) -> Any:
+        "Обрабатывает GET-запрос и полученные данные"
         self.__params["text"] = key_word
         try:
             data = self.__connect()
