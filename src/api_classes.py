@@ -79,7 +79,6 @@ class HeadHunterVacanciesSource(BaseVacanciesSource):
                 url=vac.get("alternate_url"),
                 salary_from=vac.get("salary", {}).get("from"),
                 salary_to=vac.get("salary", {}).get("to"),
-                salary_mode=vac.get("salary_range", {}).get("mode", {}).get("id"),
                 employer_name=vac.get("employer", {}).get("name"),
                 employer_url=vac.get("employer", {}).get("alternate_url"),
                 requirements=vac.get("snippet", {}).get("requirement"),
