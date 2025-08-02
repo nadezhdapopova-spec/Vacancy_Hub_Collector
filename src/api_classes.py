@@ -12,35 +12,29 @@ class BaseVacanciesSource(ABC):
 
     @abstractmethod
     def _connect(self) -> Response | None:
-        "Делает GET-запрос, проверяет статус-код ответа"
+        """Делает GET-запрос, проверяет статус-код ответа"""
         pass
 
     @abstractmethod
     def get_vacancies_data(self, key_word: str) -> Any:
-        "Обрабатывает GET-запрос и получает данные о вакансиях"
+        """Обрабатывает GET-запрос и получает данные о вакансиях"""
         pass
 
 
 class HeadHunterVacanciesSource(BaseVacanciesSource):
     """Класс для получения через API данных сайта HeadHunter.ru о вакансиях по ключевому слову"""
 
-    __slots__ = ("__url", "__headers", "__params", "__vacancies")
+    __slots__ = ("__url", "__headers", "__params")
     __url: str
     __headers: dict
     __params: dict
-    # _vacancies: list[Vacancy]
 
     def __init__(self) -> None:
         """Конструктор для получения вакансий через API"""
         self.__url = "https://api.hh.ru/vacancies"
         self.__headers = {"User-Agent": "api-test-agent"}
-        self.__params = {"text": "", "per_page": 50, "only_with_salary": True}
-        # self._vacancies = []
+        self.__params = {"text": "", "page": 0, "per_page": 100, "only_with_salary": True}
         super().__init__()
-
-    # @property
-    # def vacancies(self) -> list[Vacancy]:
-    #     return self._vacancies.copy()
 
     def _connect(self) -> Response | None:
         """Делает GET-запрос, проверяет статус-код ответа"""
@@ -50,31 +44,38 @@ class HeadHunterVacanciesSource(BaseVacanciesSource):
             return None
         return response
 
-    def get_vacancies_data(self, key_word: str) -> Any:
+    def get_vacancies_data(self, key_word: str) -> list:
         "Обрабатывает GET-запрос и получает данные о вакансиях"
-        self.__params["text"] = key_word
+        vacancies_data = []
+        page = 0
         if self._connect():
-            try:
-                response = requests.get(self.__url, headers=self.__headers, params=self.__params)
-                return response.json().get("items", [])
-            except Exception as err:
-                print(err)
-        return []
+            while True:
+                self.__params["text"] = key_word
+                self.__params["page"] = page
+                try:
+                    response = requests.get(self.__url, headers=self.__headers, params=self.__params)
+                    result = response.json()
+                    data = result.get("items", [])
+                    vacancies_data.extend(data)
+                    total_pages = data.get("pages", 1)
+                    if page >= 4 or page + 1 >= total_pages:
+                        break
+                    page += 1
+                except Exception as err:
+                    print(err)
+        return vacancies_data
 
     def get_vacancies(self, key_word: str) -> list[Vacancy]:
         """Получает данные о вакансиях и возвращает список объектов Vacancy"""
-        # vac_data = self.get_vacancies_data(key_word)
-        # self._vacancies = self.format_vacancies(vac_data)
-        # return self._vacancies
-        vacancies_data = self.get_vacancies_data(key_word)
-        return self.format_vacancies(vacancies_data)
+        vacancies = self.get_vacancies_data(key_word)
+        return self.format_vacancies(vacancies)
 
     @staticmethod
-    def format_vacancies(vacancies_data: dict) -> list[Vacancy]:
+    def format_vacancies(vacancies_data: list[dict]) -> list[Vacancy]:
         """Формирует список объектов Vacancy"""
         return [
             Vacancy(
-                id=vac.get("id"),
+                vac_id=vac.get("id"),
                 name=vac.get("name"),
                 url=vac.get("alternate_url"),
                 salary_from=vac.get("salary", {}).get("from"),
