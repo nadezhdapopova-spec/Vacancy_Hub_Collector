@@ -46,11 +46,6 @@ class Vacancy:
         self.__check_comparability(other)
         return self.salary_range == other.salary_range
 
-    def __gt__(self, other: Vacancy) -> bool:
-        """Сравнивает, является ли заработная плата в одной вакансии больше, чем во второй"""
-        self.__check_comparability(other)
-        return self.salary_range > other.salary_range
-
     @property
     def vac_id(self) -> str:
         """Возвращает id вакансии"""
