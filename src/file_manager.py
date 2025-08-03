@@ -1,8 +1,7 @@
 import json
 import os
 from abc import ABC, abstractmethod
-from idlelib.iomenu import encoding
-from typing import Any, Union
+from typing import Any
 
 import pandas as pd
 from pandas.errors import EmptyDataError
@@ -27,10 +26,10 @@ class FileManager(ABC):
 
 class JsonVacanciesFileManager(FileManager):
     """Класс для работы с вакансиями в JSON-файле"""
-    def __init__(self, filename: str="json_vacancies.json") -> None:
+    def __init__(self, filename: str = "json_vacancies.json") -> None:
         self.__filename = filename
 
-    def read_vacancies_data(self) -> list:
+    def read_vacancies_data(self) -> Any:
         """Возвращает данные о вакансиях из JSON-файла"""
         try:
             with open(self.__filename, encoding="utf-8") as f:
@@ -46,7 +45,6 @@ class JsonVacanciesFileManager(FileManager):
         """Добавляет данные о вакансиях в JSON-файл"""
         data = self.read_vacancies_data()
         existing_ids = {vac.get("vac_id") for vac in data}
-
         filtered_new_vacancies = [vac for vac in new_vacancies if vac.get("vac_id") not in existing_ids]
 
         if filtered_new_vacancies:
@@ -60,7 +58,11 @@ class JsonVacanciesFileManager(FileManager):
     def delete_vacancies_data(self, vacancy: dict) -> None:
         """Удаляет данные о вакансии из JSON-файла"""
         data = self.read_vacancies_data()
+        if not data:
+            print("Файл не содержит вакансий")
+            return
         updated_data = [v for v in data if v.get("url") != vacancy.get("url")]
+
         if len(updated_data) < len(data):
             with open(self.__filename, "w", encoding="utf-8") as f:
                 json.dump(updated_data, f, ensure_ascii=False, indent=2)
@@ -71,7 +73,7 @@ class JsonVacanciesFileManager(FileManager):
 
 class CSVVacanciesFileManager(FileManager):
     """Класс для работы с вакансиями в CSV-файле"""
-    def __init__(self, filename: str="csv_vacancies.csv") -> None:
+    def __init__(self, filename: str = "csv_vacancies.csv") -> None:
         self.__filename = filename
 
     def read_vacancies_data(self) -> pd.DataFrame:
@@ -103,7 +105,7 @@ class CSVVacanciesFileManager(FileManager):
         else:
             print("Новых вакансий для добавления нет")
 
-    def delete_vacancies_data(self, vacancy: dict):
+    def delete_vacancies_data(self, vacancy: dict) -> None:
         """Удаляет данные о вакансии из CSV-файла"""
         data = self.read_vacancies_data()
 
@@ -125,7 +127,7 @@ class CSVVacanciesFileManager(FileManager):
 
 class XLSXVacanciesFileManager(FileManager):
     """Класс для работы с вакансиями в XLSX-файле"""
-    def __init__(self, filename: str="xlsx_vacancies.xlsx"):
+    def __init__(self, filename: str = "xlsx_vacancies.xlsx") -> None:
         self.__filename = filename
 
     def read_vacancies_data(self) -> pd.DataFrame:
@@ -139,7 +141,7 @@ class XLSXVacanciesFileManager(FileManager):
             print("Файл пуст")
             return pd.DataFrame()
 
-    def add_vacancies_data(self, new_vacancies: list[dict]):
+    def add_vacancies_data(self, new_vacancies: list[dict]) -> None:
         """Добавляет данные о вакансиях в XLSX-файл"""
         data = self.read_vacancies_data()
         existing_ids = set(data["vac_id"]) if not data.empty else set()
@@ -149,15 +151,14 @@ class XLSXVacanciesFileManager(FileManager):
             new_df = pd.DataFrame(filtered_new_vacancies)
             file_exists = os.path.exists(self.__filename)
             new_df.to_excel(self.__filename,
-                          mode="a",
-                          index=False,
-                          encoding="utf-8",
-                          header=not file_exists or data.empty)
+                            mode="a",
+                            index=False,
+                            header=not file_exists or data.empty)
             print(f"Добавлено {len(filtered_new_vacancies)} новых вакансий")
         else:
             print("Новых вакансий для добавления нет")
 
-    def delete_vacancies_data(self, vacancy: dict):
+    def delete_vacancies_data(self, vacancy: dict) -> None:
         """Удаляет данные о вакансии из XLSX-файла"""
         data = self.read_vacancies_data()
 
@@ -171,7 +172,7 @@ class XLSXVacanciesFileManager(FileManager):
         updated_data = data[data["vac_id"] != id_to_delete]
 
         if len(updated_data) < len(data):
-            updated_data.to_excel(self.__filename, index=False, encoding="utf-8")
+            updated_data.to_excel(self.__filename, index=False)
             print(f"Вакансия {vacancy.get('name')} успешно удалена")
         else:
             print(f"Вакансия {vacancy.get('name')} не найдена")

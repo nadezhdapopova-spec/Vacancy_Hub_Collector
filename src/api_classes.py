@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Union
+from typing import Any
 
 import requests
 from requests import Response
@@ -75,14 +75,14 @@ class HeadHunterVacanciesSource(BaseVacanciesSource):
         """Формирует список объектов Vacancy"""
         return [
             Vacancy(
-                vac_id=vac.get("id"),
-                name=vac.get("name"),
-                url=vac.get("alternate_url"),
+                vac_id=str(vac.get("id") or ""),
+                name=str(vac.get("name") or ""),
+                url=str(vac.get("alternate_url") or ""),
                 salary_from=vac.get("salary", {}).get("from"),
                 salary_to=vac.get("salary", {}).get("to"),
-                employer_name=vac.get("employer", {}).get("name"),
-                employer_url=vac.get("employer", {}).get("alternate_url"),
-                requirements=vac.get("snippet", {}).get("requirement"),
-                area=vac.get("area", {}).get("name")
+                employer_name=str(vac.get("employer", {}).get("name") or ""),
+                employer_url=str(vac.get("employer", {}).get("alternate_url") or ""),
+                requirements=str(vac.get("snippet", {}).get("requirement") or ""),
+                area=str(vac.get("area", {}).get("name") or "")
             )
             for vac in vacancies_data]

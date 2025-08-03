@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import sys
-from typing import Union, Any
+from typing import Any, Union
 
 
 class Vacancy:
@@ -41,9 +41,10 @@ class Vacancy:
         self.__check_comparability(other)
         return self.salary_range < other.salary_range
 
-    def __eq__(self, other: Vacancy) -> bool:
+    def __eq__(self, other: object) -> bool:
         """Сравнивает, являются ли заработные платы двух вакансий одинаковыми"""
         self.__check_comparability(other)
+        assert isinstance(other, Vacancy)
         return self.salary_range == other.salary_range
 
     @property
@@ -107,7 +108,8 @@ class Vacancy:
         return 0
 
     @staticmethod
-    def __validate_salary_to(salary_from, salary_to: Union[int, float, str]) -> Union[int, float]:
+    def __validate_salary_to(salary_from: Union[int, float, str],
+                             salary_to: Union[int, float, str]) -> Union[int, float]:
         """Проверяет валидность верхней границы заработной платы"""
         if isinstance(salary_to, (int, float)):
             return int(salary_to)
@@ -119,7 +121,7 @@ class Vacancy:
         return 0
 
     @staticmethod
-    def __check_comparability(other: Any) -> None:
+    def __check_comparability(other: Any) -> Any:
         """Проверяет принадлежность объекта к классу Vacancy"""
         if not isinstance(other, Vacancy):
-            raise TypeError("Можно сравнивать объекты класса Vacancy")
+            return NotImplemented
