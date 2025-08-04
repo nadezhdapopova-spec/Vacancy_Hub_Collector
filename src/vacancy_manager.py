@@ -1,4 +1,5 @@
 import json
+import re
 from typing import Any
 
 from src.class_vacancy import Vacancy
@@ -10,11 +11,11 @@ class VacancyManager:
         self.__vacancies = vacancies
 
     @property
-    def vacancies(self):
+    def vacancies(self) -> list[Vacancy]:
         return self.__vacancies
 
     @vacancies.setter
-    def vacancies(self, new_vacancies):
+    def vacancies(self, new_vacancies: list[Vacancy]) -> None:
         self.__vacancies = new_vacancies
 
     def modify_to_list_of_dict(self) -> list[dict]:
@@ -30,7 +31,7 @@ class VacancyManager:
             "requirements": vac.requirements,
             "area": vac.area
         }
-        for vac in self.__vacancies]
+            for vac in self.__vacancies]
 
     def load_from_json_file(self, filename: str) -> None:
         """Преобразует вакансии из JSON-файла в список объектов Vacancy"""
@@ -48,17 +49,23 @@ class VacancyManager:
 
         return [v for v in self.vacancies if v.min_salary >= min_target_salary and v.max_salary <= max_target_salary]
 
-    def sort_vacancies(self):
+    def filter_by_keywords(self, filter_words: list[str]) -> list[Vacancy]:
+        """Фильтрует вакансии по заданным ключевым словам"""
+        pattern = re.compile(r"\b(" + "|".join(filter_words) + r")\b", re.IGNORECASE)
+        target_transactions = [v for v in self.vacancies if pattern.search(f"{v.name} {v.requirements}")]
+        return target_transactions
+
+    def sort_vacancies(self) -> list[Vacancy]:
         """Сортирует вакансии по заработным платам в порядке убывания"""
         return sorted(self.vacancies, reverse=True)
 
     @staticmethod
     def __validate_target_salary(min_target_salary: Any, max_target_salary: Any) -> tuple:
         """Проверяет валидность заданного диапазона заработных плат"""
-        def parse_salary(value: Any) -> int:
+        def verify_salary(value: Any) -> int:
             if isinstance(value, (int, float)) and value > 0:
                 return int(value)
             if isinstance(value, str) and value.isdigit() and int(value) > 0:
                 return int(value)
             return 0
-        return parse_salary(min_target_salary), parse_salary(max_target_salary)
+        return verify_salary(min_target_salary), verify_salary(max_target_salary)

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import sys
-from typing import Any, Union
+from typing import Union
 
 
 class Vacancy:

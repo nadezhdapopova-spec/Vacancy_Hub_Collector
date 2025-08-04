@@ -88,7 +88,7 @@ class CSVVacanciesFileManager(FileManager):
             columns = [
                 "vac_id", "name", "url", "min_salary", "max_salary",
                 "employer_name", "employer_url", "requirements", "area"
-                ]
+            ]
             pd.DataFrame(columns=columns).to_csv(self.__filename, index=False, encoding="utf-8")
 
     def read_vacancies_data(self) -> pd.DataFrame:
@@ -140,7 +140,7 @@ class XLSXVacanciesFileManager(FileManager):
         self.__filename = keyword + filename if filename == os.path.join(DATA_DIR, "_vacancies.xlsx") else filename
         self.__create_file_if_not_exists()
 
-    def __create_file_if_not_exists(self):
+    def __create_file_if_not_exists(self) -> None:
         """Создаёт XLSX-файл, если он не существует"""
         if not os.path.exists(self.__filename):
             columns = [
