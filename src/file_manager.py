@@ -149,11 +149,8 @@ class XLSXVacanciesFileManager(FileManager):
 
         if filtered_new_vacancies:
             new_df = pd.DataFrame(filtered_new_vacancies)
-            file_exists = os.path.exists(self.__filename)
-            new_df.to_excel(self.__filename,
-                            mode="a",
-                            index=False,
-                            header=not file_exists or data.empty)
+            df_combined = pd.concat([data, new_df], ignore_index=True)
+            df_combined.to_excel(self.__filename, index=False)
             print(f"Добавлено {len(filtered_new_vacancies)} новых вакансий")
         else:
             print("Новых вакансий для добавления нет")
