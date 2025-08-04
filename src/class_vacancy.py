@@ -38,13 +38,14 @@ class Vacancy:
 
     def __lt__(self, other: Vacancy) -> bool:
         """Сравнивает, является ли заработная плата в одной вакансии меньше, чем во второй"""
-        self.__check_comparability(other)
+        if not isinstance(other, Vacancy):
+            return NotImplemented
         return self.salary_range < other.salary_range
 
     def __eq__(self, other: object) -> bool:
         """Сравнивает, являются ли заработные платы двух вакансий одинаковыми"""
-        self.__check_comparability(other)
-        assert isinstance(other, Vacancy)
+        if not isinstance(other, Vacancy):
+            return NotImplemented
         return self.salary_range == other.salary_range
 
     @property
@@ -119,9 +120,3 @@ class Vacancy:
         if salary_from and not salary_to:
             return sys.float_info.max
         return 0
-
-    @staticmethod
-    def __check_comparability(other: Any) -> Any:
-        """Проверяет принадлежность объекта к классу Vacancy"""
-        if not isinstance(other, Vacancy):
-            return NotImplemented
