@@ -4,7 +4,8 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 import pandas as pd
-from pandas.errors import EmptyDataError
+
+from config import DATA_DIR
 
 
 class FileManager(ABC):
@@ -26,8 +27,8 @@ class FileManager(ABC):
 
 class JsonVacanciesFileManager(FileManager):
     """Класс для работы с вакансиями в JSON-файле"""
-    def __init__(self, keyword: str, filename: str = "vacancies.json") -> None:
-        self.__filename = keyword + "_" + filename if filename == "vacancies.json" else filename
+    def __init__(self, keyword: str, filename: str = os.path.join(DATA_DIR, "_vacancies.json")) -> None:
+        self.__filename = keyword + filename if filename == os.path.join(DATA_DIR, "_vacancies.json") else filename
         self.__create_file_if_not_exists()
 
     def __create_file_if_not_exists(self) -> None:
@@ -77,8 +78,8 @@ class JsonVacanciesFileManager(FileManager):
 
 class CSVVacanciesFileManager(FileManager):
     """Класс для работы с вакансиями в CSV-файле"""
-    def __init__(self, keyword: str, filename: str = "vacancies.csv") -> None:
-        self.__filename = keyword + "_" + filename if filename == "vacancies.csv" else filename
+    def __init__(self, keyword: str, filename: str = os.path.join(DATA_DIR, "_vacancies.csv")) -> None:
+        self.__filename = keyword + filename if filename == os.path.join(DATA_DIR, "_vacancies.csv") else filename
         self.__create_file_if_not_exists()
 
     def __create_file_if_not_exists(self) -> None:
@@ -135,8 +136,8 @@ class CSVVacanciesFileManager(FileManager):
 
 class XLSXVacanciesFileManager(FileManager):
     """Класс для работы с вакансиями в XLSX-файле"""
-    def __init__(self, keyword: str, filename: str = "vacancies.xlsx") -> None:
-        self.__filename = keyword + "_" + filename if filename == "vacancies.xlsx" else filename
+    def __init__(self, keyword: str, filename: str = os.path.join(DATA_DIR, "_vacancies.xlsx")) -> None:
+        self.__filename = keyword + filename if filename == os.path.join(DATA_DIR, "_vacancies.xlsx") else filename
         self.__create_file_if_not_exists()
 
     def __create_file_if_not_exists(self):
