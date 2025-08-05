@@ -2,6 +2,8 @@ import json
 import re
 from typing import Any
 
+import pandas as pd
+
 from src.class_vacancy import Vacancy
 
 
@@ -40,8 +42,36 @@ class VacancyManager:
                 data = json.load(f)
                 vacancies = [Vacancy(**d) for d in data]
                 self.vacancies = vacancies
+        except FileNotFoundError:
+            print("Файл не найден")
         except json.JSONDecodeError:
             print("Ошибка чтения файла")
+
+    def load_from_csv_file(self, filename: str) -> None:
+        """Преобразует вакансии из CSV-файла в список объектов Vacancy"""
+        try:
+            df = pd.read_csv(filename, delimiter=";", encoding="utf-8")
+            if not all(isinstance(col, str) for col in df.columns):
+                raise ValueError("Названия столбцов должны быть строками")
+            vacancies = [Vacancy(**row) for row in df.to_dict(orient="records")]
+            self.vacancies = vacancies
+        except FileNotFoundError:
+            print("Файл не найден")
+        except (TypeError, ValueError) as err:
+            print(f"Ошибка преобразования файла: {err}")
+
+    def load_from_xlsx_file(self, filename: str) -> None:
+        """Преобразует вакансии из XLSX-файла в список объектов Vacancy"""
+        try:
+            df = pd.read_excel(filename)
+            if not all(isinstance(col, str) for col in df.columns):
+                raise ValueError("Названия столбцов должны быть строками")
+            vacancies = [Vacancy(**row) for row in df.to_dict(orient="records")]
+            self.vacancies = vacancies
+        except FileNotFoundError:
+            print("Файл не найден")
+        except (TypeError, ValueError) as err:
+            print(f"Ошибка преобразования файла: {err}")
 
     def filter_by_salary(self, min_target_salary: int, max_target_salary: int) -> list[Vacancy]:
         """Фильтрует вакансии по заданному диапазону заработных плат"""

@@ -20,7 +20,7 @@ class FileManager(ABC):
         """Дозаписывает данные о вакансиях в файл"""
         pass
 
-    def delete_vacancies_data(self, vacancy: dict) -> None:
+    def remove_vacancies_data(self, vacancy: dict) -> None:
         """Удаляет данные о вакансии из файла"""
         pass
 
