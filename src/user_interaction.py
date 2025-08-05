@@ -2,7 +2,7 @@ from typing import Any
 
 from src.api_classes import HeadHunterVacanciesSource
 from src.class_vacancy import Vacancy
-from src.file_manager import JsonVacanciesFileManager, CSVVacanciesFileManager, XLSXVacanciesFileManager
+from src.file_manager import CSVVacanciesFileManager, JsonVacanciesFileManager, XLSXVacanciesFileManager
 from src.vacancy_manager import VacancyManager
 
 
@@ -22,8 +22,8 @@ class UserInteraction:
         self.min_salary_range = self.__validate_salary_range(min_salary_range)
         self.max_salary_range = self.__validate_salary_range(max_salary_range)
         self.top_n = top_n if isinstance(top_n, int) else 10
-        self.__sorted_vacancies = []
-        self.__manager = None
+        self.__sorted_vacancies: list = []
+        self.__manager: VacancyManager | None = None
 
     @property
     def sorted_vacancies(self) -> list[Vacancy]:
@@ -45,9 +45,11 @@ class UserInteraction:
 
     def __process_vacancies(self) -> list[Vacancy]:
         """Фильтрует и сортирует вакансии"""
-        filtered = self.__manager.filter_by_keywords(self.filter_words)
-        filtered = self.__manager.filter_by_salary(self.min_salary_range, self.max_salary_range, filtered)
-        return self.__manager.sort_vacancies(filtered)
+        if self.__manager:
+            filtered = self.__manager.filter_by_keywords(self.filter_words)
+            filtered = self.__manager.filter_by_salary(self.min_salary_range, self.max_salary_range, filtered)
+            return self.__manager.sort_vacancies(filtered)
+        return []
 
     def get_vacancies(self) -> list[Vacancy]:
         """Возвращает список отсортированных вакансий"""

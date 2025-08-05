@@ -1,5 +1,6 @@
 import json
 import re
+from typing import Optional
 
 import pandas as pd
 
@@ -85,14 +86,14 @@ class VacancyManager:
     def filter_by_salary(self,
                          min_target_salary: int,
                          max_target_salary: int,
-                         target_transactions: list[Vacancy] = None) -> list[Vacancy]:
+                         target_transactions: Optional[list[Vacancy]]) -> list[Vacancy]:
         """Фильтрует вакансии по заданному диапазону заработных плат"""
         if target_transactions:
             return [v for v in target_transactions if v.min_salary >= min_target_salary
                     and v.max_salary <= max_target_salary]
         return [v for v in self.vacancies if v.min_salary >= min_target_salary and v.max_salary <= max_target_salary]
 
-    def sort_vacancies(self, target_transactions: list[Vacancy] = None) -> list[Vacancy]:
+    def sort_vacancies(self, target_transactions: Optional[list[Vacancy]]) -> list[Vacancy]:
         """Сортирует вакансии по заработным платам в порядке убывания"""
         if target_transactions:
             return sorted(target_transactions, reverse=True)

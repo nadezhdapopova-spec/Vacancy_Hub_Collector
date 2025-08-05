@@ -1,7 +1,7 @@
 from src.user_interaction import UserInteraction
 
 
-def user_interaction():
+def user_interaction() -> None:
     while True:
         search_query = input("Введите ключевое слово для поискового запроса: ")
         filter_words = input("Введите ключевые слова для фильтрации вакансий: ").split()
