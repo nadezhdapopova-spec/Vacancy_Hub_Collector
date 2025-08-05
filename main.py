@@ -14,9 +14,10 @@ def user_interaction() -> None:
         if filtered_vacancies.__len__() > 0:
             print(f"Найдено {filtered_vacancies.__len__()} вакансий\n")
             filtered_vacancies.get_top_vacancies()
-            is_output_other = int(input("Показать остальные вакансии? (да: 1, нет: 0): "))
-            if is_output_other == 1:
-                filtered_vacancies.get_other_vacancies()
+            if filtered_vacancies.__len__() > top_n:
+                is_output_other = int(input("Показать остальные вакансии? (да: 1, нет: 0): \n"))
+                if is_output_other == 1:
+                    filtered_vacancies.get_other_vacancies()
         else:
             print("По вашему запросу вакансий не найдено. Попробуйте изменить запрос")
         choice = int(input("Попробовать снова? (да: 1, нет: 0): "))

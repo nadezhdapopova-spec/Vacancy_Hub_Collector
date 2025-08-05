@@ -33,7 +33,7 @@ class HeadHunterVacanciesSource(BaseVacanciesSource):
         """Конструктор для получения вакансий через API"""
         self.__url = "https://api.hh.ru/vacancies"
         self.__headers = {"User-Agent": "api-test-agent"}
-        self.__params = {"text": "", "page": 0, "per_page": 100, "only_with_salary": True}
+        self.__params = {"text": "", "page": 0, "per_page": 100, "only_with_salary": True, "area": 113}
         super().__init__()
 
     def _connect(self) -> Response | None:
@@ -57,7 +57,7 @@ class HeadHunterVacanciesSource(BaseVacanciesSource):
                     result = response.json()
                     data = result.get("items", [])
                     vacancies_data.extend(data)
-                    total_pages = data.get("pages", 1)
+                    total_pages = result.get("pages", 1)
                     if page >= 4 or page + 1 >= total_pages:
                         break
                     page += 1
@@ -86,3 +86,18 @@ class HeadHunterVacanciesSource(BaseVacanciesSource):
                 area=str(vac.get("area", {}).get("name") or "")
             )
             for vac in vacancies_data]
+
+
+if __name__ == "__main__":
+    hh_api = HeadHunterVacanciesSource()
+    all_vacancies = hh_api.get_vacancies("python")
+    print(all_vacancies)
+    print(all_vacancies[1].name)
+    print(all_vacancies[1].vac_id)
+    print(all_vacancies[1].url)
+    print(all_vacancies[1].min_salary)
+    print(all_vacancies[1].max_salary)
+    print(all_vacancies[1].employer_name)
+    print(all_vacancies[1].employer_url)
+    print(all_vacancies[1].requirements)
+    print(all_vacancies[1].area)

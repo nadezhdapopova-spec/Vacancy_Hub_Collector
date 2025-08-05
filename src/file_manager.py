@@ -1,7 +1,7 @@
 import json
 import os
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, Optional
 
 import pandas as pd
 
@@ -27,13 +27,14 @@ class FileManager(ABC):
 
 class JsonVacanciesFileManager(FileManager):
     """Класс для работы с вакансиями в JSON-файле"""
-    def __init__(self, keyword: str = "", filename: str = os.path.join(DATA_DIR, "_vacancies.json")) -> None:
-        self.__filename = keyword + filename if filename == os.path.join(DATA_DIR, "_vacancies.json") else filename
+    def __init__(self, filename: Optional[str], keyword: str = "") -> None:
+        self.__filename = os.path.join(DATA_DIR, f"{keyword}_vacancies.json") if not filename else filename
         self.__create_file_if_not_exists()
 
     def __create_file_if_not_exists(self) -> None:
         """Создаёт JSON-файл, если он не существует"""
         if not os.path.exists(self.__filename):
+            os.makedirs(os.path.dirname(self.__filename), exist_ok=True)
             with open(self.__filename, "w", encoding="utf-8") as f:
                 json.dump([], f, ensure_ascii=False, indent=2)
 
@@ -56,7 +57,7 @@ class JsonVacanciesFileManager(FileManager):
             data.extend(filtered_new_vacancies)
             with open(self.__filename, "w", encoding="utf-8") as f:
                 json.dump(data, f, ensure_ascii=False, indent=2)
-            print(f"Добавлено {len(filtered_new_vacancies)} новых вакансий")
+            # print(f"Добавлено {len(filtered_new_vacancies)} новых вакансий")
         else:
             print("Новых вакансий для добавления нет")
 
@@ -78,12 +79,13 @@ class JsonVacanciesFileManager(FileManager):
 
 class CSVVacanciesFileManager(FileManager):
     """Класс для работы с вакансиями в CSV-файле"""
-    def __init__(self, keyword: str = "", filename: str = os.path.join(DATA_DIR, "_vacancies.csv")) -> None:
-        self.__filename = keyword + filename if filename == os.path.join(DATA_DIR, "_vacancies.csv") else filename
+    def __init__(self, filename: Optional[str], keyword: str = "") -> None:
+        self.__filename = os.path.join(DATA_DIR, f"{keyword}_vacancies.csv") if not filename else filename
         self.__create_file_if_not_exists()
 
     def __create_file_if_not_exists(self) -> None:
         """Создаёт CSV-файл, если он не существует"""
+        os.makedirs(os.path.dirname(self.__filename), exist_ok=True)
         if not os.path.exists(self.__filename):
             columns = [
                 "vac_id", "name", "url", "min_salary", "max_salary",
@@ -113,7 +115,7 @@ class CSVVacanciesFileManager(FileManager):
                           index=False,
                           encoding="utf-8",
                           header=data.empty)
-            print(f"Добавлено {len(filtered_new_vacancies)} новых вакансий")
+            # print(f"Добавлено {len(filtered_new_vacancies)} новых вакансий")
         else:
             print("Новых вакансий для добавления нет")
 
@@ -136,12 +138,13 @@ class CSVVacanciesFileManager(FileManager):
 
 class XLSXVacanciesFileManager(FileManager):
     """Класс для работы с вакансиями в XLSX-файле"""
-    def __init__(self, keyword: str = "", filename: str = os.path.join(DATA_DIR, "_vacancies.xlsx")) -> None:
-        self.__filename = keyword + filename if filename == os.path.join(DATA_DIR, "_vacancies.xlsx") else filename
+    def __init__(self, filename: Optional[str], keyword: str = "") -> None:
+        self.__filename = os.path.join(DATA_DIR, f"{keyword}_vacancies.xlsx") if not filename else filename
         self.__create_file_if_not_exists()
 
     def __create_file_if_not_exists(self) -> None:
         """Создаёт XLSX-файл, если он не существует"""
+        os.makedirs(os.path.dirname(self.__filename), exist_ok=True)
         if not os.path.exists(self.__filename):
             columns = [
                 "vac_id", "name", "url", "min_salary", "max_salary",
@@ -161,14 +164,16 @@ class XLSXVacanciesFileManager(FileManager):
     def add_vacancies_data(self, new_vacancies: list[dict]) -> None:
         """Добавляет данные о вакансиях в XLSX-файл"""
         data = self.read_vacancies_data()
+        data = data.dropna(axis=1, how='all')
         existing_ids = set(data["vac_id"]) if not data.empty else set()
         filtered_new_vacancies = [vac for vac in new_vacancies if vac.get("vac_id") not in existing_ids]
 
         if filtered_new_vacancies:
             new_df = pd.DataFrame(filtered_new_vacancies)
+            new_df = new_df.dropna(axis=1, how='all')
             df_combined = pd.concat([data, new_df], ignore_index=True)
             df_combined.to_excel(self.__filename, index=False)
-            print(f"Добавлено {len(filtered_new_vacancies)} новых вакансий")
+            # print(f"Добавлено {len(filtered_new_vacancies)} новых вакансий")
         else:
             print("Новых вакансий для добавления нет")
 
