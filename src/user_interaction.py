@@ -34,7 +34,7 @@ class UserInteraction:
         """Возвращает количество вакансий в списке"""
         return len(self.sorted_vacancies)
 
-    def receive_and_save_vacancies(self) -> list[Vacancy]:
+    def __receive_and_save_vacancies(self) -> list[Vacancy]:
         """Получает и сохраняет вакансии"""
         hh_api = HeadHunterVacanciesSource()
         all_vacancies = hh_api.get_vacancies(self.search_query)
@@ -43,7 +43,7 @@ class UserInteraction:
         self.write_to_file(self.__manager.modify_to_list_of_dict())
         return all_vacancies
 
-    def process_vacancies(self) -> list[Vacancy]:
+    def __process_vacancies(self) -> list[Vacancy]:
         """Фильтрует и сортирует вакансии"""
         filtered = self.__manager.filter_by_keywords(self.filter_words)
         filtered = self.__manager.filter_by_salary(self.min_salary_range, self.max_salary_range, filtered)
@@ -51,8 +51,8 @@ class UserInteraction:
 
     def get_vacancies(self) -> list[Vacancy]:
         """Возвращает список отсортированных вакансий"""
-        self.receive_and_save_vacancies()
-        self.__sorted_vacancies = self.process_vacancies()
+        self.__receive_and_save_vacancies()
+        self.__sorted_vacancies = self.__process_vacancies()
         return self.__sorted_vacancies
 
     def write_to_file(self, list_of_dict: list[dict]) -> None:
