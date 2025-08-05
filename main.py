@@ -10,12 +10,13 @@ def user_interaction():
 
     filtered_vacancies = UserInteraction(search_query, filter_words, min_salary_range, max_salary_range, top_n)
     filtered_vacancies.get_vacancies()
+
     print(f"Найдено {filtered_vacancies.__len__()} вакансий\n")
-    print(filtered_vacancies.get_top_vacancies())
+    filtered_vacancies.get_top_vacancies()
     is_output_other = int(input("Показать остальные вакансии? (да: 1, нет: 0): "))
     if is_output_other == 1:
-        other_vacancies = filtered_vacancies.get_top_vacancies()
-        print(other_vacancies)
+        filtered_vacancies.get_other_vacancies()
+
 
 if __name__ == "__main__":
     user_interaction()

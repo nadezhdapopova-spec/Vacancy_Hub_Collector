@@ -1,6 +1,5 @@
 import json
 import re
-from typing import Any
 
 import pandas as pd
 
@@ -8,20 +7,24 @@ from src.class_vacancy import Vacancy
 
 
 class VacancyManager:
+    """Класс для работы со списком вакансий"""
 
     def __init__(self, vacancies: list[Vacancy]):
+        """Конструктор для создания объектов класса VacancyManager"""
         self.__vacancies = vacancies
 
     @property
     def vacancies(self) -> list[Vacancy]:
+        """Возвращает список объектов Vacancy"""
         return self.__vacancies
 
     @vacancies.setter
     def vacancies(self, new_vacancies: list[Vacancy]) -> None:
+        """Преобразует список объектов Vacancy"""
         self.__vacancies = new_vacancies
 
     def modify_to_list_of_dict(self) -> list[dict]:
-        """Преобразует вакансии в список словарей"""
+        """Преобразует список объектов Vacancy в список словарей"""
         return [{
             "vac_id": vac.vac_id,
             "name": vac.name,
@@ -84,7 +87,6 @@ class VacancyManager:
                          max_target_salary: int,
                          target_transactions: list[Vacancy] = None) -> list[Vacancy]:
         """Фильтрует вакансии по заданному диапазону заработных плат"""
-        min_target_salary, max_target_salary = self.__validate_target_salary(min_target_salary, max_target_salary)
         if target_transactions:
             return [v for v in target_transactions if v.min_salary >= min_target_salary
                     and v.max_salary <= max_target_salary]
@@ -95,14 +97,3 @@ class VacancyManager:
         if target_transactions:
             return sorted(target_transactions, reverse=True)
         return sorted(self.vacancies, reverse=True)
-
-    @staticmethod
-    def __validate_target_salary(min_target_salary: Any, max_target_salary: Any) -> tuple:
-        """Проверяет валидность заданного диапазона заработных плат"""
-        def verify_salary(value: Any) -> int:
-            if isinstance(value, (int, float)) and value > 0:
-                return int(value)
-            if isinstance(value, str) and value.isdigit() and int(value) > 0:
-                return int(value)
-            return 0
-        return verify_salary(min_target_salary), verify_salary(max_target_salary)
