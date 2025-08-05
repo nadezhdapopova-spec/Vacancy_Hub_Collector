@@ -73,20 +73,27 @@ class VacancyManager:
         except (TypeError, ValueError) as err:
             print(f"Ошибка преобразования файла: {err}")
 
-    def filter_by_salary(self, min_target_salary: int, max_target_salary: int) -> list[Vacancy]:
-        """Фильтрует вакансии по заданному диапазону заработных плат"""
-        min_target_salary, max_target_salary = self.__validate_target_salary(min_target_salary, max_target_salary)
-
-        return [v for v in self.vacancies if v.min_salary >= min_target_salary and v.max_salary <= max_target_salary]
-
     def filter_by_keywords(self, filter_words: list[str]) -> list[Vacancy]:
         """Фильтрует вакансии по заданным ключевым словам"""
         pattern = re.compile(r"\b(" + "|".join(filter_words) + r")\b", re.IGNORECASE)
         target_transactions = [v for v in self.vacancies if pattern.search(f"{v.name} {v.requirements}")]
         return target_transactions
 
-    def sort_vacancies(self) -> list[Vacancy]:
+    def filter_by_salary(self,
+                         min_target_salary: int,
+                         max_target_salary: int,
+                         target_transactions: list[Vacancy] = None) -> list[Vacancy]:
+        """Фильтрует вакансии по заданному диапазону заработных плат"""
+        min_target_salary, max_target_salary = self.__validate_target_salary(min_target_salary, max_target_salary)
+        if target_transactions:
+            return [v for v in target_transactions if v.min_salary >= min_target_salary
+                    and v.max_salary <= max_target_salary]
+        return [v for v in self.vacancies if v.min_salary >= min_target_salary and v.max_salary <= max_target_salary]
+
+    def sort_vacancies(self, target_transactions: list[Vacancy] = None) -> list[Vacancy]:
         """Сортирует вакансии по заработным платам в порядке убывания"""
+        if target_transactions:
+            return sorted(target_transactions, reverse=True)
         return sorted(self.vacancies, reverse=True)
 
     @staticmethod

@@ -27,7 +27,7 @@ class FileManager(ABC):
 
 class JsonVacanciesFileManager(FileManager):
     """Класс для работы с вакансиями в JSON-файле"""
-    def __init__(self, keyword: str, filename: str = os.path.join(DATA_DIR, "_vacancies.json")) -> None:
+    def __init__(self, keyword: str = "", filename: str = os.path.join(DATA_DIR, "_vacancies.json")) -> None:
         self.__filename = keyword + filename if filename == os.path.join(DATA_DIR, "_vacancies.json") else filename
         self.__create_file_if_not_exists()
 
@@ -78,7 +78,7 @@ class JsonVacanciesFileManager(FileManager):
 
 class CSVVacanciesFileManager(FileManager):
     """Класс для работы с вакансиями в CSV-файле"""
-    def __init__(self, keyword: str, filename: str = os.path.join(DATA_DIR, "_vacancies.csv")) -> None:
+    def __init__(self, keyword: str = "", filename: str = os.path.join(DATA_DIR, "_vacancies.csv")) -> None:
         self.__filename = keyword + filename if filename == os.path.join(DATA_DIR, "_vacancies.csv") else filename
         self.__create_file_if_not_exists()
 
@@ -136,7 +136,7 @@ class CSVVacanciesFileManager(FileManager):
 
 class XLSXVacanciesFileManager(FileManager):
     """Класс для работы с вакансиями в XLSX-файле"""
-    def __init__(self, keyword: str, filename: str = os.path.join(DATA_DIR, "_vacancies.xlsx")) -> None:
+    def __init__(self, keyword: str = "", filename: str = os.path.join(DATA_DIR, "_vacancies.xlsx")) -> None:
         self.__filename = keyword + filename if filename == os.path.join(DATA_DIR, "_vacancies.xlsx") else filename
         self.__create_file_if_not_exists()
 
