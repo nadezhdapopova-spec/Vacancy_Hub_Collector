@@ -5,7 +5,7 @@ from src.vacancy_manager import VacancyManager
 
 class UserInteraction:
     """Класс для взаимодействия с пользователем"""
-    __slots__ = ("search_query", "filter_words", "min_salary_range", "max_salary_range", "top_n", "sorted_vacancies")
+    __slots__ = ("search_query", "filter_words", "min_salary_range", "max_salary_range", "top_n", "__sorted_vacancies")
 
     def __init__(self,
                  search_query: str,
@@ -18,7 +18,11 @@ class UserInteraction:
         self.min_salary_range = min_salary_range
         self.max_salary_range = max_salary_range
         self.top_n = top_n
-        self.sorted_vacancies = []
+        self.__sorted_vacancies = []
+
+    @property
+    def sorted_vacancies(self):
+        return self.__sorted_vacancies
 
     def __len__(self):
         return len(self.sorted_vacancies)
@@ -42,7 +46,7 @@ class UserInteraction:
                                                            self.max_salary_range,
                                                            hh_vac_by_keywords)
         hh_vac_sorted = hh_vac_manager.sort_vacancies(hh_vac_by_salary)
-        self.sorted_vacancies = hh_vac_sorted
+        self.__sorted_vacancies = hh_vac_sorted
         return hh_vac_sorted
 
     def get_top_vacancies(self):
