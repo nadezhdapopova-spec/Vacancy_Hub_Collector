@@ -20,6 +20,9 @@ class UserInteraction:
         self.top_n = top_n
         self.sorted_vacancies = []
 
+    def __len__(self):
+        return len(self.sorted_vacancies)
+
     def get_vacancies(self):
         hh_api = HeadHunterVacanciesSource()
         all_vacancies = hh_api.get_vacancies(self.search_query)
