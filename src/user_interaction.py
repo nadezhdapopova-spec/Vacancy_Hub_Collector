@@ -60,9 +60,9 @@ class UserInteraction:
     def write_to_file(self, list_of_dict: list[dict]) -> None:
         """Записывает список вакансий в файлы в формате JSON, CSV, XLSX"""
         file_managers = [
-            JsonVacanciesFileManager(self.search_query),
-            CSVVacanciesFileManager(self.search_query),
-            XLSXVacanciesFileManager(self.search_query)
+            JsonVacanciesFileManager(None, self.search_query),
+            CSVVacanciesFileManager(None, self.search_query),
+            XLSXVacanciesFileManager(None, self.search_query)
         ]
         for manager in file_managers:
             manager.add_vacancies_data(list_of_dict)

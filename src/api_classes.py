@@ -33,7 +33,12 @@ class HeadHunterVacanciesSource(BaseVacanciesSource):
         """Конструктор для получения вакансий через API"""
         self.__url = "https://api.hh.ru/vacancies"
         self.__headers = {"User-Agent": "api-test-agent"}
-        self.__params = {"text": "", "page": 0, "per_page": 100, "only_with_salary": True, "area": 113}
+        self.__params = {"text": "",
+                         "page": 0,
+                         "per_page": 100,
+                         "only_with_salary": True,
+                         "currency": "RUR",
+                         "area": 113}
         super().__init__()
 
     def _connect(self) -> Response | None:
@@ -68,7 +73,8 @@ class HeadHunterVacanciesSource(BaseVacanciesSource):
     def get_vacancies(self, key_word: str) -> list[Vacancy]:
         """Получает данные о вакансиях и возвращает список объектов Vacancy"""
         vacancies = self.get_vacancies_data(key_word)
-        return self.format_vacancies(vacancies)
+        filtered = [vac for vac in vacancies if vac["salary"] and vac["salary"]["currency"] == "RUR"]
+        return self.format_vacancies(filtered)
 
     @staticmethod
     def format_vacancies(vacancies_data: list[dict]) -> list[Vacancy]:
@@ -88,16 +94,16 @@ class HeadHunterVacanciesSource(BaseVacanciesSource):
             for vac in vacancies_data]
 
 
-if __name__ == "__main__":
-    hh_api = HeadHunterVacanciesSource()
-    all_vacancies = hh_api.get_vacancies("python")
-    print(all_vacancies)
-    print(all_vacancies[1].name)
-    print(all_vacancies[1].vac_id)
-    print(all_vacancies[1].url)
-    print(all_vacancies[1].min_salary)
-    print(all_vacancies[1].max_salary)
-    print(all_vacancies[1].employer_name)
-    print(all_vacancies[1].employer_url)
-    print(all_vacancies[1].requirements)
-    print(all_vacancies[1].area)
+# if __name__ == "__main__":
+#     hh_api = HeadHunterVacanciesSource()
+#     all_vacancies = hh_api.get_vacancies("python")
+#     print(all_vacancies)
+#     print(all_vacancies[1].name)
+#     print(all_vacancies[1].vac_id)
+#     print(all_vacancies[1].url)
+#     print(all_vacancies[1].min_salary)
+#     print(all_vacancies[1].max_salary)
+#     print(all_vacancies[1].employer_name)
+#     print(all_vacancies[1].employer_url)
+#     print(all_vacancies[1].requirements)
+#     print(all_vacancies[1].area)

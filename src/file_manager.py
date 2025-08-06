@@ -33,8 +33,10 @@ class JsonVacanciesFileManager(FileManager):
 
     def __create_file_if_not_exists(self) -> None:
         """Создаёт JSON-файл, если он не существует"""
+        directory = os.path.dirname(self.__filename)
+        if directory:
+            os.makedirs(os.path.dirname(self.__filename) or ".", exist_ok=True)
         if not os.path.exists(self.__filename):
-            os.makedirs(os.path.dirname(self.__filename), exist_ok=True)
             with open(self.__filename, "w", encoding="utf-8") as f:
                 json.dump([], f, ensure_ascii=False, indent=2)
 
@@ -85,8 +87,10 @@ class CSVVacanciesFileManager(FileManager):
 
     def __create_file_if_not_exists(self) -> None:
         """Создаёт CSV-файл, если он не существует"""
-        os.makedirs(os.path.dirname(self.__filename), exist_ok=True)
         if not os.path.exists(self.__filename):
+            directory = os.path.dirname(self.__filename)
+            if directory:
+                os.makedirs(os.path.dirname(self.__filename) or ".", exist_ok=True)
             columns = [
                 "vac_id", "name", "url", "min_salary", "max_salary",
                 "employer_name", "employer_url", "requirements", "area"
@@ -144,8 +148,10 @@ class XLSXVacanciesFileManager(FileManager):
 
     def __create_file_if_not_exists(self) -> None:
         """Создаёт XLSX-файл, если он не существует"""
-        os.makedirs(os.path.dirname(self.__filename), exist_ok=True)
         if not os.path.exists(self.__filename):
+            directory = os.path.dirname(self.__filename)
+            if directory:
+                os.makedirs(os.path.dirname(self.__filename) or ".", exist_ok=True)
             columns = [
                 "vac_id", "name", "url", "min_salary", "max_salary",
                 "employer_name", "employer_url", "requirements", "area"

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import sys
 from typing import Union
 
 
@@ -13,8 +12,8 @@ class Vacancy:
                  vac_id: str,
                  name: str,
                  url: str,
-                 salary_from: Union[int, float, str],
-                 salary_to: Union[int, float, str],
+                 salary_from: Union[int, float, str, bool],
+                 salary_to: Union[int, float, str, bool],
                  employer_name: str,
                  employer_url: str,
                  requirements: str,
@@ -32,6 +31,14 @@ class Vacancy:
 
     def __str__(self) -> str:
         """Возвращает строковое представление вакансии для пользователя"""
+        if not self.has_min_salary:
+            return (f"{self.__name}\nЗарплата: до {self.__max_salary}\n"
+                    f"Компания: {self.__employer_name}\nГород: {self.__area}\n"
+                    f"Ссылка на вакансию: {self.__url}\nСсылка на компанию: {self.__employer_url}\n")
+        if not self.has_max_salary:
+            return (f"{self.__name}\nЗарплата: от {self.__min_salary}\n"
+                    f"Компания: {self.__employer_name}\nГород: {self.__area}\n"
+                    f"Ссылка на вакансию: {self.__url}\nСсылка на компанию: {self.__employer_url}\n")
         return (f"{self.__name}\nЗарплата: от {self.__min_salary} до {self.__max_salary}\n"
                 f"Компания: {self.__employer_name}\nГород: {self.__area}\n"
                 f"Ссылка на вакансию: {self.__url}\nСсылка на компанию: {self.__employer_url}\n")
@@ -98,8 +105,18 @@ class Vacancy:
         """Возвращает кортеж с нижней и верхней границами заработной платы"""
         return self.__min_salary, self.__max_salary
 
+    @property
+    def has_min_salary(self) -> bool:
+        """Есть ли информация о нижней границе зарплаты"""
+        return self.__min_salary > 0
+
+    @property
+    def has_max_salary(self) -> bool:
+        """Есть ли информация о верхней границе зарплаты"""
+        return self.__max_salary != self.__min_salary
+
     @staticmethod
-    def __validate_salary_from(salary_from: Union[int, float, str]) -> int:
+    def __validate_salary_from(salary_from: Union[int, float, str, bool])-> int:
         """Проверяет валидность нижней границы заработной платы"""
         if isinstance(salary_from, (int, float)):
             return int(salary_from)
@@ -109,14 +126,12 @@ class Vacancy:
         return 0
 
     @staticmethod
-    def __validate_salary_to(salary_from: Union[int, float, str],
-                             salary_to: Union[int, float, str]) -> Union[int, float]:
+    def __validate_salary_to(salary_from: Union[int, float, str, bool],
+                             salary_to: Union[int, float, str, bool]) -> int:
         """Проверяет валидность верхней границы заработной платы"""
         if isinstance(salary_to, (int, float)):
             return int(salary_to)
         if isinstance(salary_to, str):
             if salary_to.isdigit():
                 return int(salary_to)
-        if salary_from and not salary_to:
-            return sys.float_info.max
-        return 0
+        return int(salary_from)

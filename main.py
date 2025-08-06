@@ -20,8 +20,8 @@ def user_interaction() -> None:
                     filtered_vacancies.get_other_vacancies()
         else:
             print("По вашему запросу вакансий не найдено. Попробуйте изменить запрос")
-        choice = int(input("Попробовать снова? (да: 1, нет: 0): "))
-        if choice != 1:
+        choice = input("Попробовать снова? (да: 1, нет: 0): ")
+        if int(choice) != 1:
             break
 
 
