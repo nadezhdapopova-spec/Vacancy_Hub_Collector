@@ -92,7 +92,7 @@ class CSVVacanciesFileManager(FileManager):
             if directory:
                 os.makedirs(os.path.dirname(self.__filename) or ".", exist_ok=True)
             columns = [
-                "vac_id", "name", "url", "min_salary", "max_salary",
+                "vac_id", "name", "url", "salary_from", "salary_to",
                 "employer_name", "employer_url", "requirements", "area"
             ]
             pd.DataFrame(columns=columns).to_csv(self.__filename, index=False, encoding="utf-8")
@@ -153,7 +153,7 @@ class XLSXVacanciesFileManager(FileManager):
             if directory:
                 os.makedirs(os.path.dirname(self.__filename) or ".", exist_ok=True)
             columns = [
-                "vac_id", "name", "url", "min_salary", "max_salary",
+                "vac_id", "name", "url", "salary_from", "salary_to",
                 "employer_name", "employer_url", "requirements", "area"
             ]
             pd.DataFrame(columns=columns).to_excel(self.__filename, index=False)

@@ -30,8 +30,8 @@ class VacancyManager:
             "vac_id": vac.vac_id,
             "name": vac.name,
             "url": vac.url,
-            "min_salary": vac.min_salary,
-            "max_salary": vac.max_salary,
+            "salary_from": vac.salary_from,
+            "salary_to": vac.salary_to,
             "employer_name": vac.employer_name,
             "employer_url": vac.employer_url,
             "requirements": vac.requirements,
@@ -55,10 +55,16 @@ class VacancyManager:
         """Преобразует вакансии из CSV-файла в список объектов Vacancy"""
         try:
             df = pd.read_csv(filename, delimiter=";", encoding="utf-8")
-            if not all(isinstance(col, str) for col in df.columns):
-                raise ValueError("Названия столбцов должны быть строками")
-            vacancies = [Vacancy(**row) for row in df.to_dict(orient="records")]
-            self.vacancies = vacancies
+            df = pd.DataFrame(df[df["vac_id"] != "vac_id"])
+            df.columns = df.columns.map(str)
+            records = df.to_dict(orient="records")
+            records = [{str(k): v for k, v in row.items()} for row in records]
+            # self.vacancies = [Vacancy(**row) for row in records]
+            for row in records:
+                for key in row.keys():
+                    if not isinstance(key, str):
+                        print(f"Нестрочный ключ найден: {key} ({type(key)})")
+                self.vacancies.append(Vacancy(**row))
         except FileNotFoundError:
             print("Файл не найден")
         except (TypeError, ValueError) as err:
@@ -68,10 +74,10 @@ class VacancyManager:
         """Преобразует вакансии из XLSX-файла в список объектов Vacancy"""
         try:
             df = pd.read_excel(filename)
-            if not all(isinstance(col, str) for col in df.columns):
-                raise ValueError("Названия столбцов должны быть строками")
-            vacancies = [Vacancy(**row) for row in df.to_dict(orient="records")]
-            self.vacancies = vacancies
+            df.columns = df.columns.map(str)
+            records = df.to_dict(orient="records")
+            records = [{str(k): v for k, v in row.items()} for row in records]
+            self.vacancies = [Vacancy(**row) for row in records]
         except FileNotFoundError:
             print("Файл не найден")
         except (TypeError, ValueError) as err:
@@ -89,9 +95,9 @@ class VacancyManager:
                          target_transactions: Optional[list[Vacancy]]) -> list[Vacancy]:
         """Фильтрует вакансии по заданному диапазону заработных плат"""
         if target_transactions:
-            return [v for v in target_transactions if v.min_salary >= min_target_salary
-                    and v.max_salary <= max_target_salary]
-        return [v for v in self.vacancies if v.min_salary >= min_target_salary and v.max_salary <= max_target_salary]
+            return [v for v in target_transactions if v.salary_from >= min_target_salary
+                    and v.salary_to <= max_target_salary]
+        return [v for v in self.vacancies if v.salary_from >= min_target_salary and v.salary_to <= max_target_salary]
 
     def sort_vacancies(self, target_transactions: Optional[list[Vacancy]]) -> list[Vacancy]:
         """Сортирует вакансии по заработным платам в порядке убывания"""
