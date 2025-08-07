@@ -9,8 +9,8 @@ from src.logging_config import LoggingConfigClassMixin
 from src.vacancy_manager import VacancyManager
 
 
-class UserInteraction(LoggingConfigClassMixin):
-    """Класс для взаимодействия с пользователем"""
+class VacancyInteraction(LoggingConfigClassMixin):
+    """Класс для взаимодействия с вакансиями"""
     __slots__ = ("search_query", "filter_words", "min_salary_range", "max_salary_range",
                  "top_n", "__sorted_vacancies", "__manager")
 
