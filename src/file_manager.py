@@ -30,10 +30,10 @@ class JsonVacanciesFileManager(FileManager, LoggingConfigClassMixin):
     """Класс для работы с вакансиями в JSON-файле"""
 
     def __init__(self, filename: Optional[str], keyword: str = "") -> None:
+        super().__init__()
+        self.logger = self.configure()
         self.__filename = os.path.join(DATA_DIR, f"{keyword}_vacancies.json") if not filename else filename
         self.__create_file_if_not_exists()
-        super().__init__(log_file=os.path.join(LOGS_DIR, "json_file_manager.log"))
-        self.logger = self.configure()
 
     def __create_file_if_not_exists(self) -> None:
         """Создаёт JSON-файл, если он не существует"""
@@ -93,10 +93,10 @@ class CSVVacanciesFileManager(FileManager, LoggingConfigClassMixin):
     """Класс для работы с вакансиями в CSV-файле"""
 
     def __init__(self, filename: Optional[str], keyword: str = "") -> None:
+        super().__init__()
+        self.logger = self.configure()
         self.__filename = os.path.join(DATA_DIR, f"{keyword}_vacancies.csv") if not filename else filename
         self.__create_file_if_not_exists()
-        super().__init__(log_file=os.path.join(LOGS_DIR, "csv_file_manager.log"))
-        self.logger = self.configure()
 
     def __create_file_if_not_exists(self) -> None:
         """Создаёт CSV-файл, если он не существует"""
@@ -166,10 +166,10 @@ class XLSXVacanciesFileManager(FileManager, LoggingConfigClassMixin):
     """Класс для работы с вакансиями в XLSX-файле"""
 
     def __init__(self, filename: Optional[str], keyword: str = "") -> None:
+        super().__init__()
+        self.logger = self.configure()
         self.__filename = os.path.join(DATA_DIR, f"{keyword}_vacancies.xlsx") if not filename else filename
         self.__create_file_if_not_exists()
-        super().__init__(log_file=os.path.join(LOGS_DIR, "xlsx_file_manager.log"))
-        self.logger = self.configure()
 
     def __create_file_if_not_exists(self) -> None:
         """Создаёт XLSX-файл, если он не существует"""

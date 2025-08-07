@@ -74,6 +74,6 @@ class LoggingConfigClassMixin:
     @staticmethod
     def _get_caller_module_name() -> str:
         """Возвращает имя модуля, вызвавшего конфигурацию логгера"""
-        caller_frame = inspect.stack()[1]
+        caller_frame = inspect.stack()[2]
         caller_module = inspect.getmodule(caller_frame.frame)
         return caller_module.__name__ if caller_module else "unknown"
