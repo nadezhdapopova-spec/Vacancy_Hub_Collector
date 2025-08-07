@@ -34,14 +34,13 @@ class UserInteraction:
         """Возвращает количество вакансий в списке"""
         return len(self.sorted_vacancies)
 
-    def __receive_and_save_vacancies(self) -> list[Vacancy]:
+    def __receive_and_save_vacancies(self) -> None:
         """Получает и сохраняет вакансии"""
         hh_api = HeadHunterVacanciesSource()
         all_vacancies = hh_api.get_vacancies(self.search_query)
 
         self.__manager = VacancyManager(all_vacancies)
         self.write_to_file(self.__manager.modify_to_list_of_dict())
-        return all_vacancies
 
     def __process_vacancies(self) -> list[Vacancy]:
         """Фильтрует и сортирует вакансии"""
