@@ -1,0 +1,55 @@
+from src.class_vacancy import Vacancy
+
+
+def test_product_init(vacancy_1: Vacancy, vacancy_2: Vacancy, vacancy_3: Vacancy) -> None:
+    """Проверяет инициализацию объектов класса Vacancy"""
+    assert vacancy_1.vac_id == "123052790"
+    assert vacancy_1.name == "Backend-разработчик (Junior/Middle)"
+    assert vacancy_1.url == "https://hh.ru/vacancy/123052790"
+    assert vacancy_1.salary_from == 80000
+    assert vacancy_1.salary_to == 180000
+    assert vacancy_1.employer_name == "Панин Павел Сергеевич"
+    assert vacancy_1.employer_url == "https://hh.ru/employer/10044585"
+    assert vacancy_1.requirements == "Уверенное знание Python. Опыт веб-разработки"
+    assert vacancy_1.area == "Москва"
+
+    assert vacancy_2.salary_from == 110000
+    assert vacancy_2.salary_to == 110000
+
+    assert vacancy_3.salary_from == 0
+    assert vacancy_3.salary_to == 80000
+
+
+def test___str__(vacancy_1: Vacancy) -> None:
+    assert str(vacancy_1) == ("Backend-разработчик (Junior/Middle)\n"
+                              "Зарплата: от 80000 до 180000\n"
+                              "Компания: Панин Павел Сергеевич\n"
+                              "Город: Москва\n"
+                              "Ссылка на вакансию: https://hh.ru/vacancy/123052790\n"
+                              "Ссылка на компанию: https://hh.ru/employer/10044585\n")
+
+
+def test___str__not_salary_to(vacancy_2: Vacancy) -> None:
+    assert str(vacancy_2) == ("Тестировщик / QA Engineer\n"
+                              "Зарплата: от 110000\n"
+                              "Компания: Люмера\n"
+                              "Город: Москва\n"
+                              "Ссылка на вакансию: https://hh.ru/vacancy/123754650\n"
+                              "Ссылка на компанию: https://hh.ru/employer/12155707\n")
+
+
+def test___str__not_salary_from(vacancy_3: Vacancy) -> None:
+    assert str(vacancy_3) == ("Junior QA/тестировщик\n"
+                              "Зарплата: до 80000\n"
+                              "Компания: Your CodeReview\n"
+                              "Город: Волгоград\n"
+                              "Ссылка на вакансию: https://hh.ru/vacancy/123752740\n"
+                              "Ссылка на компанию: https://hh.ru/employer/5962259\n")
+
+
+def test___lt__(vacancy_1: Vacancy, vacancy_2: Vacancy) -> None:
+    pass
+
+
+def test___validate_salary_from() -> None:
+    pass

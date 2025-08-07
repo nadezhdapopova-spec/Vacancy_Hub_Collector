@@ -1,8 +1,10 @@
+import os.path
 from typing import Any
 
+from config import DATA_DIR
 from src.api_classes import HeadHunterVacanciesSource
 from src.class_vacancy import Vacancy
-from src.file_manager import CSVVacanciesFileManager, JsonVacanciesFileManager, XLSXVacanciesFileManager
+from src.file_manager import JsonVacanciesFileManager
 from src.logging_config import LoggingConfigClassMixin
 from src.vacancy_manager import VacancyManager
 
@@ -42,8 +44,10 @@ class UserInteraction(LoggingConfigClassMixin):
         hh_api = HeadHunterVacanciesSource()
         all_vacancies = hh_api.get_vacancies(self.search_query)
 
+        self.__file_manager = JsonVacanciesFileManager(os.path.join(DATA_DIR, "vacancies.json"))
+        self.__file_manager.save_vacancies(all_vacancies)
+
         self.__manager = VacancyManager(all_vacancies)
-        self.write_to_file(self.__manager.modify_to_list_of_dict())
 
     def __process_vacancies(self) -> list[Vacancy]:
         """Фильтрует и сортирует вакансии"""
@@ -59,16 +63,6 @@ class UserInteraction(LoggingConfigClassMixin):
         self.__sorted_vacancies = self.__process_vacancies()
         return self.__sorted_vacancies
 
-    def write_to_file(self, list_of_dict: list[dict]) -> None:
-        """Записывает список вакансий в файлы в формате JSON, CSV, XLSX"""
-        file_managers = [
-            JsonVacanciesFileManager(None, self.search_query),
-            CSVVacanciesFileManager(None, self.search_query),
-            XLSXVacanciesFileManager(None, self.search_query)
-        ]
-        for manager in file_managers:
-            manager.add_vacancies_data(list_of_dict)
-
     def get_top_vacancies(self) -> None:
         """Выводит пользователю топ вакансий"""
         print(f"Топ-{self.top_n} вакансий:")
@@ -80,7 +74,7 @@ class UserInteraction(LoggingConfigClassMixin):
         """Выводит пользователю отсортированные вакансии"""
         for v in self.sorted_vacancies[self.top_n:]:
             print(v)
-        self.logger.info(f"Отсортированные вакансии выведены в консоль")
+        self.logger.info("Отсортированные вакансии выведены в консоль")
 
     @staticmethod
     def __validate_salary_range(salary: Any) -> int:

@@ -100,18 +100,3 @@ class HeadHunterVacanciesSource(BaseVacanciesSource, LoggingConfigClassMixin):
             for vac in vacancies_data]
         self.logger.info("Данные о вакансиях преобразованы в объекты класса Vacancy")
         return vacancies
-
-
-# if __name__ == "__main__":
-#     hh_api = HeadHunterVacanciesSource()
-#     all_vacancies = hh_api.get_vacancies("python")
-#     print(all_vacancies)
-#     print(all_vacancies[1].name)
-#     print(all_vacancies[1].vac_id)
-#     print(all_vacancies[1].url)
-#     print(all_vacancies[1].min_salary)
-#     print(all_vacancies[1].max_salary)
-#     print(all_vacancies[1].employer_name)
-#     print(all_vacancies[1].employer_url)
-#     print(all_vacancies[1].requirements)
-#     print(all_vacancies[1].area)
