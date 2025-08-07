@@ -1,20 +1,19 @@
 from __future__ import annotations
 
-import sys
-from typing import Any, Union
+from typing import Union
 
 
 class Vacancy:
     """Класс для создания вакансии"""
-    __slots__ = ("__vac_id", "__name", "__url", "__min_salary", "__max_salary", "__employer_name",
+    __slots__ = ("__vac_id", "__name", "__url", "__salary_from", "__salary_to", "__employer_name",
                  "__employer_url", "__requirements", "__area")
 
     def __init__(self,
                  vac_id: str,
                  name: str,
                  url: str,
-                 salary_from: Union[int, float, str],
-                 salary_to: Union[int, float, str],
+                 salary_from: Union[int, float, str, bool],
+                 salary_to: Union[int, float, str, bool],
                  employer_name: str,
                  employer_url: str,
                  requirements: str,
@@ -23,8 +22,8 @@ class Vacancy:
         self.__vac_id = vac_id
         self.__name = name
         self.__url = url
-        self.__min_salary = self.__validate_salary_from(salary_from)
-        self.__max_salary = self.__validate_salary_to(salary_from, salary_to)
+        self.__salary_from = self.__validate_salary_from(salary_from)
+        self.__salary_to = self.__validate_salary_to(salary_from, salary_to)
         self.__employer_name = employer_name
         self.__employer_url = employer_url
         self.__requirements = requirements
@@ -32,19 +31,28 @@ class Vacancy:
 
     def __str__(self) -> str:
         """Возвращает строковое представление вакансии для пользователя"""
-        return (f"{self.__name}\nЗарплата: от {self.__min_salary} до {self.__max_salary}\n"
+        if not self.has_salary_from:
+            return (f"{self.__name}\nЗарплата: до {self.__salary_to}\n"
+                    f"Компания: {self.__employer_name}\nГород: {self.__area}\n"
+                    f"Ссылка на вакансию: {self.__url}\nСсылка на компанию: {self.__employer_url}\n")
+        if not self.has_salary_to:
+            return (f"{self.__name}\nЗарплата: от {self.__salary_from}\n"
+                    f"Компания: {self.__employer_name}\nГород: {self.__area}\n"
+                    f"Ссылка на вакансию: {self.__url}\nСсылка на компанию: {self.__employer_url}\n")
+        return (f"{self.__name}\nЗарплата: от {self.__salary_from} до {self.__salary_to}\n"
                 f"Компания: {self.__employer_name}\nГород: {self.__area}\n"
                 f"Ссылка на вакансию: {self.__url}\nСсылка на компанию: {self.__employer_url}\n")
 
     def __lt__(self, other: Vacancy) -> bool:
         """Сравнивает, является ли заработная плата в одной вакансии меньше, чем во второй"""
-        self.__check_comparability(other)
+        if not isinstance(other, Vacancy):
+            return NotImplemented
         return self.salary_range < other.salary_range
 
     def __eq__(self, other: object) -> bool:
         """Сравнивает, являются ли заработные платы двух вакансий одинаковыми"""
-        self.__check_comparability(other)
-        assert isinstance(other, Vacancy)
+        if not isinstance(other, Vacancy):
+            return NotImplemented
         return self.salary_range == other.salary_range
 
     @property
@@ -63,14 +71,14 @@ class Vacancy:
         return self.__url
 
     @property
-    def min_salary(self) -> int:
+    def salary_from(self) -> int:
         """Возвращает нижнюю границу заработной платы"""
-        return self.__min_salary
+        return self.__salary_from
 
     @property
-    def max_salary(self) -> Union[int, float]:
+    def salary_to(self) -> Union[int, float]:
         """Возвращает верхнюю границу заработной платы"""
-        return self.__max_salary
+        return self.__salary_to
 
     @property
     def employer_name(self) -> str:
@@ -95,10 +103,20 @@ class Vacancy:
     @property
     def salary_range(self) -> tuple:
         """Возвращает кортеж с нижней и верхней границами заработной платы"""
-        return self.__min_salary, self.__max_salary
+        return self.__salary_from, self.__salary_to
+
+    @property
+    def has_salary_from(self) -> bool:
+        """Есть ли информация о нижней границе зарплаты"""
+        return self.__salary_from > 0
+
+    @property
+    def has_salary_to(self) -> bool:
+        """Есть ли информация о верхней границе зарплаты"""
+        return self.__salary_to != self.__salary_from
 
     @staticmethod
-    def __validate_salary_from(salary_from: Union[int, float, str]) -> int:
+    def __validate_salary_from(salary_from: Union[int, float, str, bool]) -> int:
         """Проверяет валидность нижней границы заработной платы"""
         if isinstance(salary_from, (int, float)):
             return int(salary_from)
@@ -108,20 +126,12 @@ class Vacancy:
         return 0
 
     @staticmethod
-    def __validate_salary_to(salary_from: Union[int, float, str],
-                             salary_to: Union[int, float, str]) -> Union[int, float]:
+    def __validate_salary_to(salary_from: Union[int, float, str, bool],
+                             salary_to: Union[int, float, str, bool]) -> int:
         """Проверяет валидность верхней границы заработной платы"""
         if isinstance(salary_to, (int, float)):
             return int(salary_to)
         if isinstance(salary_to, str):
             if salary_to.isdigit():
                 return int(salary_to)
-        if salary_from and not salary_to:
-            return sys.float_info.max
-        return 0
-
-    @staticmethod
-    def __check_comparability(other: Any) -> Any:
-        """Проверяет принадлежность объекта к классу Vacancy"""
-        if not isinstance(other, Vacancy):
-            return NotImplemented
+        return int(salary_from)
