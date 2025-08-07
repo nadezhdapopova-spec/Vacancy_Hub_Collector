@@ -3,10 +3,11 @@ from typing import Any
 from src.api_classes import HeadHunterVacanciesSource
 from src.class_vacancy import Vacancy
 from src.file_manager import CSVVacanciesFileManager, JsonVacanciesFileManager, XLSXVacanciesFileManager
+from src.logging_config import LoggingConfigClassMixin
 from src.vacancy_manager import VacancyManager
 
 
-class UserInteraction:
+class UserInteraction(LoggingConfigClassMixin):
     """Класс для взаимодействия с пользователем"""
     __slots__ = ("search_query", "filter_words", "min_salary_range", "max_salary_range",
                  "top_n", "__sorted_vacancies", "__manager")
@@ -24,6 +25,8 @@ class UserInteraction:
         self.top_n = top_n if isinstance(top_n, int) else 10
         self.__sorted_vacancies: list = []
         self.__manager: VacancyManager | None = None
+        super().__init__()
+        self.logger = self.configure()
 
     @property
     def sorted_vacancies(self) -> list[Vacancy]:
@@ -71,11 +74,13 @@ class UserInteraction:
         print(f"Топ-{self.top_n} вакансий:")
         for v in self.sorted_vacancies[:self.top_n]:
             print(v)
+        self.logger.info(f"Топ-{self.top_n} вакансий выведены в консоль")
 
     def get_other_vacancies(self) -> None:
         """Выводит пользователю отсортированные вакансии"""
         for v in self.sorted_vacancies[self.top_n:]:
             print(v)
+        self.logger.info(f"Отсортированные вакансии выведены в консоль")
 
     @staticmethod
     def __validate_salary_range(salary: Any) -> int:

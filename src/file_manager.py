@@ -5,7 +5,8 @@ from typing import Any, Optional
 
 import pandas as pd
 
-from config import DATA_DIR
+from config import DATA_DIR, LOGS_DIR
+from src.logging_config import LoggingConfigClassMixin
 
 
 class FileManager(ABC):
@@ -25,11 +26,14 @@ class FileManager(ABC):
         pass
 
 
-class JsonVacanciesFileManager(FileManager):
+class JsonVacanciesFileManager(FileManager, LoggingConfigClassMixin):
     """Класс для работы с вакансиями в JSON-файле"""
+
     def __init__(self, filename: Optional[str], keyword: str = "") -> None:
         self.__filename = os.path.join(DATA_DIR, f"{keyword}_vacancies.json") if not filename else filename
         self.__create_file_if_not_exists()
+        super().__init__(log_file=os.path.join(LOGS_DIR, "json_file_manager.log"))
+        self.logger = self.configure()
 
     def __create_file_if_not_exists(self) -> None:
         """Создаёт JSON-файл, если он не существует"""
@@ -39,14 +43,16 @@ class JsonVacanciesFileManager(FileManager):
         if not os.path.exists(self.__filename):
             with open(self.__filename, "w", encoding="utf-8") as f:
                 json.dump([], f, ensure_ascii=False, indent=2)
+            self.logger.info(f"Создан файл {self.__filename}")
 
     def read_vacancies_data(self) -> Any:
         """Возвращает данные о вакансиях из JSON-файла"""
         try:
+            self.logger.info(f"Файл {self.__filename} открыт для чтения")
             with open(self.__filename, encoding="utf-8") as f:
                 return json.load(f)
-        except json.JSONDecodeError:
-            print("Ошибка чтения файла")
+        except json.JSONDecodeError as err:
+            self.logger.error(f"Ошибка чтения файла {self.__filename}: {err}")
             return []
 
     def add_vacancies_data(self, new_vacancies: list[dict]) -> None:
@@ -57,33 +63,40 @@ class JsonVacanciesFileManager(FileManager):
 
         if filtered_new_vacancies:
             data.extend(filtered_new_vacancies)
+            self.logger.info(f"Файл {self.__filename} открыт для редактирования")
             with open(self.__filename, "w", encoding="utf-8") as f:
                 json.dump(data, f, ensure_ascii=False, indent=2)
-            # print(f"Добавлено {len(filtered_new_vacancies)} новых вакансий")
+            self.logger.info(f"Добавлено {len(filtered_new_vacancies)} новых вакансий")
         else:
-            print("Новых вакансий для добавления нет")
+            self.logger.info("Новых вакансий для добавления нет")
 
     def remove_vacancies_data(self, vacancy: dict) -> None:
         """Удаляет данные о вакансии из JSON-файла"""
         data = self.read_vacancies_data()
         if not data:
-            print("Файл не содержит вакансий")
+            self.logger.warning(f"Файл {self.__filename} не содержит вакансий")
             return
         updated_data = [v for v in data if v.get("url") != vacancy.get("url")]
 
         if len(updated_data) < len(data):
+            self.logger.info(f"Файл {self.__filename} открыт для редактирования")
             with open(self.__filename, "w", encoding="utf-8") as f:
                 json.dump(updated_data, f, ensure_ascii=False, indent=2)
+            self.logger.info(f"Вакансия {vacancy.get('name')} успешно удалена")
             print(f"Вакансия {vacancy.get('name')} успешно удалена")
         else:
+            self.logger.info(f"Вакансия {vacancy.get('name')} не найдена")
             print(f"Вакансия {vacancy.get('name')} не найдена")
 
 
-class CSVVacanciesFileManager(FileManager):
+class CSVVacanciesFileManager(FileManager, LoggingConfigClassMixin):
     """Класс для работы с вакансиями в CSV-файле"""
+
     def __init__(self, filename: Optional[str], keyword: str = "") -> None:
         self.__filename = os.path.join(DATA_DIR, f"{keyword}_vacancies.csv") if not filename else filename
         self.__create_file_if_not_exists()
+        super().__init__(log_file=os.path.join(LOGS_DIR, "csv_file_manager.log"))
+        self.logger = self.configure()
 
     def __create_file_if_not_exists(self) -> None:
         """Создаёт CSV-файл, если он не существует"""
@@ -96,14 +109,18 @@ class CSVVacanciesFileManager(FileManager):
                 "employer_name", "employer_url", "requirements", "area"
             ]
             pd.DataFrame(columns=columns).to_csv(self.__filename, index=False, encoding="utf-8")
+            self.logger.info(f"Создан файл {self.__filename}")
 
     def read_vacancies_data(self) -> pd.DataFrame:
         """Возвращает данные о вакансиях из CSV-файла"""
         try:
+            self.logger.info(f"Файл {self.__filename} открыт для чтения")
             return pd.read_csv(self.__filename, encoding="utf-8")
         except FileNotFoundError:
+            self.logger.error(f"Файл {self.__filename} не найден")
             return pd.DataFrame()
-        except ValueError:
+        except ValueError as err:
+            self.logger.error(f"Ошибка чтения файла {self.__filename}: {err}")
             return pd.DataFrame()
 
     def add_vacancies_data(self, new_vacancies: list[dict]) -> None:
@@ -114,14 +131,15 @@ class CSVVacanciesFileManager(FileManager):
 
         if filtered_new_vacancies:
             new_df = pd.DataFrame(filtered_new_vacancies)
+            self.logger.info(f"Файл {self.__filename} открыт для редактирования")
             new_df.to_csv(self.__filename,
                           mode="a",
                           index=False,
                           encoding="utf-8",
                           header=data.empty)
-            # print(f"Добавлено {len(filtered_new_vacancies)} новых вакансий")
+            self.logger.info(f"Добавлено {len(filtered_new_vacancies)} новых вакансий")
         else:
-            print("Новых вакансий для добавления нет")
+            self.logger.info("Новых вакансий для добавления нет")
 
     def remove_vacancies_data(self, vacancy: dict) -> None:
         """Удаляет данные о вакансии из CSV-файла"""
@@ -129,22 +147,29 @@ class CSVVacanciesFileManager(FileManager):
 
         id_to_delete = vacancy.get("vac_id")
         if id_to_delete is None:
+            self.logger.warning(f"Не указан id для удаления: {vacancy}")
             print("Не указан id для удаления")
             return
         updated_data = data[data["vac_id"] != id_to_delete]
 
         if len(updated_data) < len(data):
+            self.logger.info(f"Файл {self.__filename} открыт для редактирования")
             updated_data.to_csv(self.__filename, index=False, encoding="utf-8")
+            self.logger.info(f"Вакансия {vacancy.get('name')} успешно удалена")
             print(f"Вакансия {vacancy.get('name')} успешно удалена")
         else:
+            self.logger.info(f"Вакансия {vacancy.get('name')} не найдена")
             print(f"Вакансия {vacancy.get('name')} не найдена")
 
 
-class XLSXVacanciesFileManager(FileManager):
+class XLSXVacanciesFileManager(FileManager, LoggingConfigClassMixin):
     """Класс для работы с вакансиями в XLSX-файле"""
+
     def __init__(self, filename: Optional[str], keyword: str = "") -> None:
         self.__filename = os.path.join(DATA_DIR, f"{keyword}_vacancies.xlsx") if not filename else filename
         self.__create_file_if_not_exists()
+        super().__init__(log_file=os.path.join(LOGS_DIR, "xlsx_file_manager.log"))
+        self.logger = self.configure()
 
     def __create_file_if_not_exists(self) -> None:
         """Создаёт XLSX-файл, если он не существует"""
@@ -157,14 +182,18 @@ class XLSXVacanciesFileManager(FileManager):
                 "employer_name", "employer_url", "requirements", "area"
             ]
             pd.DataFrame(columns=columns).to_excel(self.__filename, index=False)
+            self.logger.info(f"Создан файл {self.__filename}")
 
     def read_vacancies_data(self) -> pd.DataFrame:
         """Возвращает данные о вакансиях из XLSX-файла"""
         try:
+            self.logger.info(f"Файл {self.__filename} открыт для чтения")
             return pd.read_excel(self.__filename)
         except FileNotFoundError:
+            self.logger.error(f"Файл {self.__filename} не найден")
             return pd.DataFrame()
-        except ValueError:
+        except ValueError as err:
+            self.logger.error(f"Ошибка чтения файла {self.__filename}: {err}")
             return pd.DataFrame()
 
     def add_vacancies_data(self, new_vacancies: list[dict]) -> None:
@@ -178,10 +207,11 @@ class XLSXVacanciesFileManager(FileManager):
             new_df = pd.DataFrame(filtered_new_vacancies)
             new_df = new_df.dropna(axis=1, how='all')
             df_combined = pd.concat([data, new_df], ignore_index=True)
+            self.logger.info(f"Файл {self.__filename} открыт для редактирования")
             df_combined.to_excel(self.__filename, index=False)
-            # print(f"Добавлено {len(filtered_new_vacancies)} новых вакансий")
+            self.logger.info(f"Добавлено {len(filtered_new_vacancies)} новых вакансий")
         else:
-            print("Новых вакансий для добавления нет")
+            self.logger.info("Новых вакансий для добавления нет")
 
     def remove_vacancies_data(self, vacancy: dict) -> None:
         """Удаляет данные о вакансии из XLSX-файла"""
@@ -189,12 +219,16 @@ class XLSXVacanciesFileManager(FileManager):
 
         id_to_delete = vacancy.get("vac_id")
         if id_to_delete is None:
+            self.logger.warning(f"Не указан id для удаления: {vacancy}")
             print("Не указан id для удаления")
             return
         updated_data = data[data["vac_id"] != id_to_delete]
 
         if len(updated_data) < len(data):
+            self.logger.info(f"Файл {self.__filename} открыт для редактирования")
             updated_data.to_excel(self.__filename, index=False)
+            self.logger.info(f"Вакансия {vacancy.get('name')} успешно удалена")
             print(f"Вакансия {vacancy.get('name')} успешно удалена")
         else:
+            self.logger.info(f"Вакансия {vacancy.get('name')} не найдена")
             print(f"Вакансия {vacancy.get('name')} не найдена")
