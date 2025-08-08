@@ -1,4 +1,7 @@
+import pytest
+
 from src.class_vacancy import Vacancy
+from tests.conftest import vacancy_1, vacancy_5, vacancy_4
 
 
 def test_product_init(vacancy_1: Vacancy, vacancy_2: Vacancy, vacancy_3: Vacancy) -> None:
@@ -47,9 +50,48 @@ def test___str__not_salary_from(vacancy_3: Vacancy) -> None:
                               "Ссылка на компанию: https://hh.ru/employer/5962259\n")
 
 
-def test___lt__(vacancy_1: Vacancy, vacancy_2: Vacancy) -> None:
-    pass
+def test___lt__(vacancy_1: Vacancy, vacancy_4: Vacancy, vacancy_5: Vacancy) -> None:
+    print(vacancy_1 < vacancy_5)
+    print(vacancy_5 < vacancy_4)
+    print(vacancy_4 < vacancy_1)
+
+    assert (vacancy_1 < vacancy_5) is True
+    assert (vacancy_5 < vacancy_4) is False
+    assert (vacancy_4 < vacancy_1) is True
+    assert Vacancy.__lt__(vacancy_1, "строка") is NotImplemented
 
 
-def test___validate_salary_from() -> None:
-    pass
+def test___eq__(vacancy_2: Vacancy, vacancy_4: Vacancy, vacancy_5: Vacancy) -> None:
+    print(vacancy_2 == vacancy_5)
+    print(vacancy_2 == vacancy_4)
+
+    assert (vacancy_2 == vacancy_5) is True
+    assert (vacancy_2 == vacancy_4) is False
+    assert Vacancy.__eq__(vacancy_2, "строка") is NotImplemented
+
+
+@pytest.mark.parametrize("salary_from, expected", [
+    (100000, 100000),
+    (100000.0, 100000),
+    ("100000", 100000),
+    ("строка", 0),
+    (None, 0)
+])
+def test___validate_salary_from(salary_from, expected) -> None:
+    result = Vacancy._Vacancy__validate_salary_from(salary_from)
+    assert result == expected
+
+
+@pytest.mark.parametrize("salary_from, salary_to, expected", [
+    (100000, 150000, 150000,),
+    (100000.0, 150000.0, 150000),
+    ("100000", "150000", 150000),
+    (100000, "строка", 100000),
+    ("100000", "строка", 100000),
+    (100000, None, 100000),
+    (None, None, 0),
+    ("строка", "строка", 0)
+])
+def test___validate_salary_to(salary_from, salary_to, expected) -> None:
+    result = Vacancy._Vacancy__validate_salary_to(salary_from, salary_to)
+    assert result == expected
