@@ -12,8 +12,8 @@ class Vacancy:
                  vac_id: str,
                  name: str,
                  url: str,
-                 salary_from: Union[int, float, str, bool],
-                 salary_to: Union[int, float, str, bool],
+                 salary_from: Union[int, float, str, None],
+                 salary_to: Union[int, float, str, None],
                  employer_name: str,
                  employer_url: str,
                  requirements: str,
@@ -116,7 +116,7 @@ class Vacancy:
         return self.__salary_to != self.__salary_from
 
     @staticmethod
-    def __validate_salary_from(salary_from: Union[int, float, str, bool]) -> int:
+    def __validate_salary_from(salary_from: Union[int, float, str, None]) -> int:
         """Проверяет валидность нижней границы заработной платы"""
         if isinstance(salary_from, (int, float)):
             return int(salary_from)
@@ -126,12 +126,14 @@ class Vacancy:
         return 0
 
     @staticmethod
-    def __validate_salary_to(salary_from: Union[int, float, str, bool],
-                             salary_to: Union[int, float, str, bool]) -> int:
+    def __validate_salary_to(salary_from: Union[int, float, str, None],
+                             salary_to: Union[int, float, str, None]) -> int:
         """Проверяет валидность верхней границы заработной платы"""
         if isinstance(salary_to, (int, float)):
             return int(salary_to)
         if isinstance(salary_to, str):
             if salary_to.isdigit():
                 return int(salary_to)
-        return int(salary_from)
+        if isinstance(salary_from, (int, float, str)) and str(salary_from).isdigit():
+            return int(salary_from)
+        return 0

@@ -5,6 +5,7 @@ import requests
 from requests import Response
 
 from src.class_vacancy import Vacancy
+from src.logging_config import LoggingConfigClassMixin
 
 
 class BaseVacanciesSource(ABC):
@@ -21,7 +22,7 @@ class BaseVacanciesSource(ABC):
         pass
 
 
-class HeadHunterVacanciesSource(BaseVacanciesSource):
+class HeadHunterVacanciesSource(BaseVacanciesSource, LoggingConfigClassMixin):
     """Класс для получения через API данных сайта HeadHunter.ru о вакансиях по ключевому слову"""
 
     __slots__ = ("__url", "__headers", "__params")
@@ -40,17 +41,20 @@ class HeadHunterVacanciesSource(BaseVacanciesSource):
                          "currency": "RUR",
                          "area": 113}
         super().__init__()
+        super().__init__()
+        self.logger = self.configure()
 
     def _connect(self) -> Response | None:
         """Делает GET-запрос, проверяет статус-код ответа"""
         response = requests.get(self.__url, headers=self.__headers)
         if response.status_code != 200:
-            print("Ошибка подключения")
+            self.logger.error("Ошибка подключения через API")
             return None
+        self.logger.info("Успешное подключение через API")
         return response
 
     def get_vacancies_data(self, key_word: str) -> list:
-        "Обрабатывает GET-запрос и получает данные о вакансиях"
+        """Обрабатывает GET-запрос и получает данные о вакансиях"""
         vacancies_data = []
         page = 0
         if self._connect():
@@ -59,7 +63,9 @@ class HeadHunterVacanciesSource(BaseVacanciesSource):
                 self.__params["page"] = page
                 try:
                     response = requests.get(self.__url, headers=self.__headers, params=self.__params)
+                    self.logger.info("Получены данные о вакансиях")
                     result = response.json()
+                    self.logger.info("Данные о вакансиях преобразованы в json-формат")
                     data = result.get("items", [])
                     vacancies_data.extend(data)
                     total_pages = result.get("pages", 1)
@@ -67,7 +73,8 @@ class HeadHunterVacanciesSource(BaseVacanciesSource):
                         break
                     page += 1
                 except Exception as err:
-                    print(err)
+                    self.logger.error(f"Ошибка получения данных: {err}")
+                    break
         return vacancies_data
 
     def get_vacancies(self, key_word: str) -> list[Vacancy]:
@@ -76,10 +83,9 @@ class HeadHunterVacanciesSource(BaseVacanciesSource):
         filtered = [vac for vac in vacancies if vac["salary"] and vac["salary"]["currency"] == "RUR"]
         return self.format_vacancies(filtered)
 
-    @staticmethod
-    def format_vacancies(vacancies_data: list[dict]) -> list[Vacancy]:
+    def format_vacancies(self, vacancies_data: list[dict]) -> list[Vacancy]:
         """Формирует список объектов Vacancy"""
-        return [
+        vacancies = [
             Vacancy(
                 vac_id=str(vac.get("id") or ""),
                 name=str(vac.get("name") or ""),
@@ -92,18 +98,5 @@ class HeadHunterVacanciesSource(BaseVacanciesSource):
                 area=str(vac.get("area", {}).get("name") or "")
             )
             for vac in vacancies_data]
-
-
-# if __name__ == "__main__":
-#     hh_api = HeadHunterVacanciesSource()
-#     all_vacancies = hh_api.get_vacancies("python")
-#     print(all_vacancies)
-#     print(all_vacancies[1].name)
-#     print(all_vacancies[1].vac_id)
-#     print(all_vacancies[1].url)
-#     print(all_vacancies[1].min_salary)
-#     print(all_vacancies[1].max_salary)
-#     print(all_vacancies[1].employer_name)
-#     print(all_vacancies[1].employer_url)
-#     print(all_vacancies[1].requirements)
-#     print(all_vacancies[1].area)
+        self.logger.info("Данные о вакансиях преобразованы в объекты класса Vacancy")
+        return vacancies

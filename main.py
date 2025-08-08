@@ -1,4 +1,4 @@
-from src.user_interaction import UserInteraction
+from src.vacancy_interaction import VacancyInteraction
 
 
 def user_interaction() -> None:
@@ -9,7 +9,7 @@ def user_interaction() -> None:
         max_salary_range = int(input("Введите верхнюю границу заработной платы: "))
         top_n = int(input("Введите количество вакансий для вывода в топ N: "))
 
-        filtered_vacancies = UserInteraction(search_query, filter_words, min_salary_range, max_salary_range, top_n)
+        filtered_vacancies = VacancyInteraction(search_query, filter_words, min_salary_range, max_salary_range, top_n)
         filtered_vacancies.get_vacancies()
         if filtered_vacancies.__len__() > 0:
             print(f"Найдено {filtered_vacancies.__len__()} вакансий\n")
