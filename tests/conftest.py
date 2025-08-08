@@ -100,3 +100,40 @@ def raw_data_for_vacancy() -> list[dict]:
             "area": {"name": "Москва"}
         }
     ]
+
+
+@pytest.fixture
+def dict_for_vacancy() -> dict:
+    return {"vac_id": "123",
+            "name": "Python Developer",
+            "url": "http://example.com/vacancy/123",
+            "salary_from": 100000,
+            "salary_to": 150000,
+            "employer_name": "SuperCompany",
+            "employer_url": "http://example.com/employer/1",
+            "requirements": "Python, Django",
+            "area": "Москва"}
+
+
+@pytest.fixture
+def dicts_for_vacancies() -> list[dict]:
+    return [
+        {"vac_id": "123",
+         "name": "Python Developer",
+         "url": "http://example.com/vacancy/123",
+         "salary_from": 100000,
+         "salary_to": 150000,
+         "employer_name": "SuperCompany",
+         "employer_url": "http://example.com/employer/1",
+         "requirements": "Python, Django",
+         "area": "Москва"},
+        {"vac_id": "456",
+         "name": "Junior QA",
+         "url": "http://example.com/vacancy/456",
+         "salary_from": 50000,
+         "salary_to": 90000,
+         "employer_name": "MyCompany",
+         "employer_url": "http://example.com/employer/2",
+         "requirements": "Python, SQL",
+         "area": "Барнаул"}
+    ]

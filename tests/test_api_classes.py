@@ -101,16 +101,17 @@ def test_get_vacancies(api_client: HeadHunterVacanciesSource) -> None:
 
     formatted_result = ["Vacancy 1", "Vacancy 2"]
 
-    _ = [
+    expected_filtered = [
         {"id": 1, "name": "Python Dev", "salary": {"currency": "RUR", "from": 100000}},
         {"id": 4, "name": "Go Dev", "salary": {"currency": "RUR", "from": 110000}},
     ]
 
     with patch.object(api_client, "get_vacancies_data", return_value=mock_data), \
-            patch.object(api_client, "format_vacancies", return_value=formatted_result):
+            patch.object(api_client, "format_vacancies", return_value=formatted_result) as mock_format:
         result = api_client.get_vacancies("python")
 
     assert result == formatted_result
+    mock_format.assert_called_once_with(expected_filtered)
 
 
 def test_format_vacancies(raw_data_for_vacancy: list[dict]) -> None:
