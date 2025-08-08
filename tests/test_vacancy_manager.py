@@ -3,6 +3,7 @@ from src.vacancy_manager import VacancyManager
 
 
 def test_filter_by_keywords(vacancy_1: Vacancy, vacancy_2: Vacancy, vacancy_3: Vacancy) -> None:
+    """Проверяет фильтрацию вакансий по заданным ключевым словам"""
     vac_list = [vacancy_1, vacancy_2, vacancy_3]
 
     vac_manager = VacancyManager(vac_list)
@@ -12,6 +13,7 @@ def test_filter_by_keywords(vacancy_1: Vacancy, vacancy_2: Vacancy, vacancy_3: V
 
 
 def test_filter_by_salary(vacancy_1: Vacancy, vacancy_2: Vacancy, vacancy_3: Vacancy) -> None:
+    """Проверяет фильтрацию вакансий по диапазону заработных плат"""
     vac_list = [vacancy_1, vacancy_2, vacancy_3]
 
     vac_manager = VacancyManager(vac_list)
@@ -21,6 +23,7 @@ def test_filter_by_salary(vacancy_1: Vacancy, vacancy_2: Vacancy, vacancy_3: Vac
 
 
 def test_sort_vacancies(vacancy_1: Vacancy, vacancy_2: Vacancy, vacancy_3: Vacancy) -> None:
+    """Проверяет сортировку вакансий по заработным платам в порядке убывания"""
     vac_list = [vacancy_1, vacancy_2, vacancy_3]
 
     vac_manager = VacancyManager(vac_list)

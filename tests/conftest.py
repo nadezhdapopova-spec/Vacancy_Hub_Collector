@@ -2,6 +2,7 @@ import pytest
 
 from src.api_classes import HeadHunterVacanciesSource
 from src.class_vacancy import Vacancy
+from src.vacancy_interaction import VacancyInteraction
 
 
 @pytest.fixture
@@ -137,3 +138,12 @@ def dicts_for_vacancies() -> list[dict]:
          "requirements": "Python, SQL",
          "area": "Барнаул"}
     ]
+
+
+@pytest.fixture
+def vacancies_interaction() -> VacancyInteraction:
+    return VacancyInteraction("python",
+                              ["тестировщик", "SQL"],
+                              50000,
+                              100000,
+                              2)

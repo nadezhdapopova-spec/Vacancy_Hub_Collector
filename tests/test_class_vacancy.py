@@ -63,7 +63,7 @@ def test___lt__(vacancy_1: Vacancy, vacancy_4: Vacancy, vacancy_5: Vacancy) -> N
     assert (vacancy_1 < vacancy_5) is True
     assert (vacancy_5 < vacancy_4) is False
     assert (vacancy_4 < vacancy_1) is True
-    assert Vacancy.__lt__(vacancy_1, "строка") is NotImplemented
+    assert Vacancy.__lt__(vacancy_1, "строка") is NotImplemented  # type: ignore
 
 
 def test___eq__(vacancy_2: Vacancy, vacancy_4: Vacancy, vacancy_5: Vacancy) -> None:
@@ -85,7 +85,7 @@ def test___eq__(vacancy_2: Vacancy, vacancy_4: Vacancy, vacancy_5: Vacancy) -> N
 ])
 def test___validate_salary_from(salary_from: Any, expected: int) -> None:
     """Проверяет метод, определяющий валидность нижней границы заработной платы"""
-    result = Vacancy._Vacancy__validate_salary_from(salary_from)
+    result = Vacancy._Vacancy__validate_salary_from(salary_from)  # type: ignore
     assert result == expected
 
 
@@ -101,7 +101,7 @@ def test___validate_salary_from(salary_from: Any, expected: int) -> None:
 ])
 def test___validate_salary_to(salary_from: Any, salary_to: Any, expected: int) -> None:
     """Проверяет метод, определяющий валидность верхней границы заработной платы"""
-    result = Vacancy._Vacancy__validate_salary_to(salary_from, salary_to)
+    result = Vacancy._Vacancy__validate_salary_to(salary_from, salary_to)  # type: ignore
     assert result == expected
 
 

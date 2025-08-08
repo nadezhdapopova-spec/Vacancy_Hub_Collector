@@ -71,7 +71,7 @@ class VacancyInteraction(LoggingConfigClassMixin):
         self.logger.info(f"Топ-{self.top_n} вакансий выведены в консоль")
 
     def get_other_vacancies(self) -> None:
-        """Выводит пользователю отсортированные вакансии"""
+        """Выводит пользователю остальных отсортированные вакансии"""
         for v in self.sorted_vacancies[self.top_n:]:
             print(v)
         self.logger.info("Отсортированные вакансии выведены в консоль")
