@@ -137,7 +137,7 @@ class CSVVacanciesFileManager(FileManager):
     def __init__(self, filename: Optional[str]) -> None:
         """Конструктор для инициализации объектов класса"""
         super().__init__()
-        self.__filename = os.path.join(DATA_DIR, f"vacancies.csv") if not filename else filename
+        self.__filename = os.path.join(DATA_DIR, "vacancies.csv") if not filename else filename
         self.__create_file_if_not_exists()
 
     def __create_file_if_not_exists(self) -> None:
@@ -190,7 +190,7 @@ class XLSXVacanciesFileManager(FileManager):
     def __init__(self, filename: Optional[str]) -> None:
         """Конструктор для инициализации объектов класса"""
         super().__init__()
-        self.__filename = os.path.join(DATA_DIR, f"vacancies.xlsx") if not filename else filename
+        self.__filename = os.path.join(DATA_DIR, "vacancies.xlsx") if not filename else filename
         self.__create_file_if_not_exists()
 
     def __create_file_if_not_exists(self) -> None:

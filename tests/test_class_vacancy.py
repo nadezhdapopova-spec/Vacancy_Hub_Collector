@@ -1,7 +1,8 @@
+from typing import Any
+
 import pytest
 
 from src.class_vacancy import Vacancy
-from tests.conftest import vacancy_1, vacancy_5, vacancy_4
 
 
 def test_product_init(vacancy_1: Vacancy, vacancy_2: Vacancy, vacancy_3: Vacancy) -> None:
@@ -24,6 +25,7 @@ def test_product_init(vacancy_1: Vacancy, vacancy_2: Vacancy, vacancy_3: Vacancy
 
 
 def test___str__(vacancy_1: Vacancy) -> None:
+    """Проверяет форму вывода вакансий с диапазоном зарплат для пользователя"""
     assert str(vacancy_1) == ("Backend-разработчик (Junior/Middle)\n"
                               "Зарплата: от 80000 до 180000\n"
                               "Компания: Панин Павел Сергеевич\n"
@@ -33,6 +35,7 @@ def test___str__(vacancy_1: Vacancy) -> None:
 
 
 def test___str__not_salary_to(vacancy_2: Vacancy) -> None:
+    """Проверяет форму вывода вакансий без верхней границы зарплаты для пользователя"""
     assert str(vacancy_2) == ("Тестировщик / QA Engineer\n"
                               "Зарплата: от 110000\n"
                               "Компания: Люмера\n"
@@ -42,6 +45,7 @@ def test___str__not_salary_to(vacancy_2: Vacancy) -> None:
 
 
 def test___str__not_salary_from(vacancy_3: Vacancy) -> None:
+    """Проверяет форму вывода вакансий без нижней границы зарплаты для пользователя"""
     assert str(vacancy_3) == ("Junior QA/тестировщик\n"
                               "Зарплата: до 80000\n"
                               "Компания: Your CodeReview\n"
@@ -51,6 +55,7 @@ def test___str__not_salary_from(vacancy_3: Vacancy) -> None:
 
 
 def test___lt__(vacancy_1: Vacancy, vacancy_4: Vacancy, vacancy_5: Vacancy) -> None:
+    """Проверяет метод сравнения зарплат: является ли заработная плата в одной вакансии меньше, чем во второй"""
     print(vacancy_1 < vacancy_5)
     print(vacancy_5 < vacancy_4)
     print(vacancy_4 < vacancy_1)
@@ -62,6 +67,7 @@ def test___lt__(vacancy_1: Vacancy, vacancy_4: Vacancy, vacancy_5: Vacancy) -> N
 
 
 def test___eq__(vacancy_2: Vacancy, vacancy_4: Vacancy, vacancy_5: Vacancy) -> None:
+    """Проверяет метод сравнения зарплат: являются ли заработные платы двух вакансий одинаковыми"""
     print(vacancy_2 == vacancy_5)
     print(vacancy_2 == vacancy_4)
 
@@ -77,7 +83,8 @@ def test___eq__(vacancy_2: Vacancy, vacancy_4: Vacancy, vacancy_5: Vacancy) -> N
     ("строка", 0),
     (None, 0)
 ])
-def test___validate_salary_from(salary_from, expected) -> None:
+def test___validate_salary_from(salary_from: Any, expected: int) -> None:
+    """Проверяет метод, определяющий валидность нижней границы заработной платы"""
     result = Vacancy._Vacancy__validate_salary_from(salary_from)
     assert result == expected
 
@@ -92,6 +99,21 @@ def test___validate_salary_from(salary_from, expected) -> None:
     (None, None, 0),
     ("строка", "строка", 0)
 ])
-def test___validate_salary_to(salary_from, salary_to, expected) -> None:
+def test___validate_salary_to(salary_from: Any, salary_to: Any, expected: int) -> None:
+    """Проверяет метод, определяющий валидность верхней границы заработной платы"""
     result = Vacancy._Vacancy__validate_salary_to(salary_from, salary_to)
     assert result == expected
+
+
+def test_has_salary_from(vacancy_1: Vacancy, vacancy_2: Vacancy, vacancy_3: Vacancy) -> None:
+    """Проверяет property метод, определяющий есть ли информация о нижней границе зарплаты"""
+    assert vacancy_1.has_salary_from is True
+    assert vacancy_2.has_salary_from is True
+    assert vacancy_3.has_salary_from is False
+
+
+def test_has_salary_to(vacancy_1: Vacancy, vacancy_4: Vacancy, vacancy_5: Vacancy) -> None:
+    """Проверяет property метод, определяющий есть ли информация о верхней границе зарплаты"""
+    assert vacancy_1.has_salary_from is True
+    assert vacancy_4.has_salary_from is False
+    assert vacancy_5.has_salary_from is True
