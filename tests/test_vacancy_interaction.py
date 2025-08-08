@@ -10,23 +10,23 @@ from src.vacancy_interaction import VacancyInteraction
 def test___len__(vacancy_1: Vacancy,
                  vacancy_2: Vacancy,
                  vacancy_3: Vacancy,
-                 vac_interaction: VacancyInteraction) -> None:
+                 vacancies_interaction: VacancyInteraction) -> None:
     """Проверяет магический метод __len__ для определения длины списка вакансий"""
-    vac_interaction._VacancyInteraction__sorted_vacancies = [vacancy_1, vacancy_2, vacancy_3]
+    vacancies_interaction._VacancyInteraction__sorted_vacancies = [vacancy_1, vacancy_2, vacancy_3]
 
-    assert len(vac_interaction) == 3
+    assert len(vacancies_interaction) == 3
 
 
 def test_get_top_vacancies(vacancy_1: Vacancy,
                            vacancy_2: Vacancy,
                            vacancy_3: Vacancy,
-                           vac_interaction: VacancyInteraction,
+                           vacancies_interaction: VacancyInteraction,
                            capsys: Any) -> None:
     """Проверяет вывод пользователю топ вакансий"""
-    vac_interaction.logger = MagicMock()
-    vac_interaction._VacancyInteraction__sorted_vacancies = [vacancy_1, vacancy_2, vacancy_3]
+    vacancies_interaction.logger = MagicMock()
+    vacancies_interaction._VacancyInteraction__sorted_vacancies = [vacancy_1, vacancy_2, vacancy_3]
 
-    vac_interaction.get_top_vacancies()
+    vacancies_interaction.get_top_vacancies()
 
     captured = capsys.readouterr()
     assert "Топ-2 вакансий:" in captured.out
@@ -46,19 +46,19 @@ def test_get_top_vacancies(vacancy_1: Vacancy,
             "Ссылка на компанию: https://hh.ru/employer/12155707\n"
             "\n") in captured.out
 
-    vac_interaction.logger.info.assert_called_once_with("Топ-2 вакансий выведены в консоль")
+    vacancies_interaction.logger.info.assert_called_once_with("Топ-2 вакансий выведены в консоль")
 
 
 def test_get_other_vacancies(vacancy_1: Vacancy,
                              vacancy_2: Vacancy,
                              vacancy_3: Vacancy,
-                             vac_interaction: VacancyInteraction,
+                             vacancies_interaction: VacancyInteraction,
                              capsys: Any) -> None:
     """Проверяет вывод пользователю остальных отсортированных вакансий"""
-    vac_interaction.logger = MagicMock()
-    vac_interaction._VacancyInteraction__sorted_vacancies = [vacancy_1, vacancy_2, vacancy_3]
+    vacancies_interaction.logger = MagicMock()
+    vacancies_interaction._VacancyInteraction__sorted_vacancies = [vacancy_1, vacancy_2, vacancy_3]
 
-    vac_interaction.get_other_vacancies()
+    vacancies_interaction.get_other_vacancies()
 
     captured = capsys.readouterr()
     assert ("Junior QA/тестировщик\n"
@@ -68,7 +68,7 @@ def test_get_other_vacancies(vacancy_1: Vacancy,
             "Ссылка на вакансию: https://hh.ru/vacancy/123752740\n"
             "Ссылка на компанию: https://hh.ru/employer/5962259\n"
             "\n") in captured.out
-    vac_interaction.logger.info.assert_called_once_with("Отсортированные вакансии выведены в консоль")
+    vacancies_interaction.logger.info.assert_called_once_with("Отсортированные вакансии выведены в консоль")
 
 
 @pytest.mark.parametrize("salary, expected", [
