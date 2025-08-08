@@ -1,4 +1,4 @@
-from src.user_interaction import VacancyInteraction
+from src.vacancy_interaction import VacancyInteraction
 
 
 def user_interaction() -> None:
