@@ -1,11 +1,11 @@
 import json
 from typing import Any
-from unittest.mock import MagicMock, patch, mock_open
+from unittest.mock import MagicMock, mock_open, patch
 
 import pytest
 
 from src.class_vacancy import Vacancy
-from src.file_manager import JsonVacanciesFileManager, CSVVacanciesFileManager, XLSXVacanciesFileManager
+from src.file_manager import CSVVacanciesFileManager, JsonVacanciesFileManager, XLSXVacanciesFileManager
 
 
 @pytest.mark.parametrize("manager_class, file_path, file_name", [
