@@ -74,7 +74,7 @@ class HeadHunterVacanciesSource(BaseVacanciesSource, LoggingConfigClassMixin):
                     page += 1
                 except Exception as err:
                     self.logger.error(f"Ошибка получения данных: {err}")
-                    print(err)
+                    break
         return vacancies_data
 
     def get_vacancies(self, key_word: str) -> list[Vacancy]:

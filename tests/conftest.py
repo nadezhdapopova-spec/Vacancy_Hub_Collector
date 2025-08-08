@@ -1,5 +1,6 @@
 import pytest
 
+from src.api_classes import HeadHunterVacanciesSource
 from src.class_vacancy import Vacancy
 
 
@@ -76,3 +77,26 @@ def vacancy_5() -> Vacancy:
         requirements="Готовность к обучению и командной работе. Опыт работы с Superset",
         area="Москва"
     )
+
+
+@pytest.fixture
+def api_client() -> HeadHunterVacanciesSource:
+    return HeadHunterVacanciesSource()
+
+
+@pytest.fixture
+def raw_data_for_vacancy() -> list[dict]:
+    return [
+        {
+            "id": "123",
+            "name": "Python Developer",
+            "alternate_url": "http://example.com/vacancy/123",
+            "salary": {"from": 100000, "to": 150000, "currency": "RUR"},
+            "employer": {
+                "name": "SuperCompany",
+                "alternate_url": "http://example.com/employer/1"
+            },
+            "snippet": {"requirement": "Python, Django"},
+            "area": {"name": "Москва"}
+        }
+    ]
