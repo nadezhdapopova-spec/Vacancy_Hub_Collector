@@ -41,6 +41,10 @@ exclude = """
 )/
 """
 
+[[tool.mypy.overrides]]
+module = "tests.*"
+ignore_errors = true
+
 [tool.black]
 line-length = 119
 exclude = """
